@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scroll_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_sign_up"
+            app:titleTextColor="@android:color/white"
+            app:title="Регистрация"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="enterAlways|snap"
+            />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edt_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:inputType="textPersonName"
+                android:maxLength="50"
+                app:met_maxCharacters="50"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="Имя"
+                app:met_primaryColor="@color/colorPrimary"
+                app:met_underlineColor="@color/colorPrimary" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edt_location_street"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:maxLength="50"
+                app:met_maxCharacters="50"
+                android:inputType="text"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="Улица"
+                app:met_primaryColor="@color/colorPrimary"
+                app:met_underlineColor="@color/colorPrimary" />
+
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edt_location_home"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:maxLength="50"
+                app:met_maxCharacters="50"
+                android:inputType="text"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="Дом"
+                app:met_primaryColor="@color/colorPrimary"
+                app:met_underlineColor="@color/colorPrimary" />
+
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edt_location_pod"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:inputType="number"
+                android:maxLength="2"
+                app:met_maxCharacters="2"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="Подъезд"
+                app:met_primaryColor="@color/colorPrimary"
+                app:met_underlineColor="@color/colorPrimary" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edt_location_et"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:maxLength="2"
+                app:met_maxCharacters="2"
+                android:inputType="number"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="Этаж"
+                app:met_primaryColor="@color/colorPrimary"
+                app:met_underlineColor="@color/colorPrimary" />
+
+            <com.rengwuxian.materialedittext.MaterialEditText
+                android:id="@+id/edt_location_apart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:maxEms="50"
+                app:met_maxCharacters="50"
+                android:inputType="text"
+                app:met_floatingLabelAlwaysShown="true"
+                app:met_floatingLabelText="Квартира"
+                app:met_primaryColor="@color/colorPrimary"
+                app:met_underlineColor="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/btn_signUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@color/colorPrimary"
+                android:text="Войти"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edt_password" />
+
+            <ProgressBar
+                android:id="@+id/progress_sign_up"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

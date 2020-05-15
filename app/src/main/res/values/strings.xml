@@ -1,0 +1,71 @@
+<resources>
+    <string name="app_name">Империя суши</string>
+
+    <string name="error_null">ERROR: NULL OBJECT</string>
+    <string name="error_empty">ERROR: ARGUMENT IS EMPTY</string>
+
+    <string name="tab_home_name">Главное</string>
+    <string name="tab_basket_name">Корзина</string>
+    <string name="tab_favorite_name">Любимое</string>
+    <string name="tab_search_name">Поиск</string>
+
+    <string name="sushi_categories">Суши</string>
+    <string name="rolls_categories">Роллы</string>
+    <string name="classic_rolls_categories">Классические роллы</string>
+    <string name="hot_rolls_categories">Горячие роллы</string>
+    <string name="baked_rolls_categories">Запеченные роллы</string>
+    <string name="sets_categories">Сеты</string>
+    <string name="snacks_categories">Закуски</string>
+    <string name="soups_categories">Супы</string>
+    <string name="wok_categories">ВОК</string>
+    <string name="salads_categories">Салаты</string>
+    <string name="drinks_categories">Напитки</string>
+    <string name="sauces_categories">Соусы</string>
+
+    <string name="offer_type_search">Тут пусто, введите хотя бы пару букв :)</string>
+    <string name="error_not_found">Такого у нас нету :(</string>
+
+    <string name="registration_loading">Секунду...</string>
+
+    <string name="error_internet">Нет интернет соединения</string>
+    <string name="error_internet_description">Интернет не обнаружен, при первом запуске обязательно интернет соединение.</string>
+
+    <string name="error_empty_orders">Тут пусто! Закажите что-нибудь!</string>
+    <string name="error_empty_orderlist">Выберите что-нибудь! Корзина пуста :)</string>
+
+    <string name="home_about_us_etc" >О нас, скидки и акции</string>
+    <string name="home_might_like" >Могут понравится</string>
+    <string name="order_history">История</string>
+
+    <string name="message_removed">Удалено</string>
+    <string name="added_to_favorites">Добавлено в любимые</string>
+    <string name="has_been_added_to_favorites_yet">Уже в любимых</string>
+    <string name="added_to_orderlist">Добавлено в корзину</string>
+    <string name="has_been_added_to_orderlist_yet">Уже в корзине</string>
+    <string name="errro_empry_favorite_products">Добавьте продукты в любимые. Тут пусто :(</string>
+    <string name="error_empty_order_favorites">Добавляйте заказы в любимое. А пока тут пусто :(</string>
+    <string name="order_history_title">История заказов</string>
+    <string name="order_history_empty_error">Тут будет история ваших заказов, после вы сможете быстро повторить сделанный заказ</string>
+    <string name="order_notification_tag">ROrderStatusNotificationStatus</string>
+    <string name="location_title">Местоположение</string>
+    <string name="order_it">Заказать</string>
+    <string name="yandex_maps">Яндекс.Карты</string>
+    <string name="save_changes">Сохранить изменения</string>
+
+
+    <string-array name="about_us_urls">
+        <item>http://sushi-imperiya.ru/components/com_jshopping/files/img_products/full_akari.jpg</item>
+        <item>http://sushi-imperiya.ru/components/com_jshopping/files/img_products/full_bol__shoy-milan.jpg</item>
+
+    </string-array>
+    <string-array name="about_us_titles">
+        <item>Только самое свежее и самое лучшее</item>
+        <item>Удобство</item>
+
+    </string-array>
+    <string-array name="about_us_description" >
+        <item>- Ваш заказ поступает на кухню немедленно после согласования с Вами.\n- Над Вашим заказом работают аттестованные повара-сушисты.\n- Наш шеф-повар постоянно работает над улучшением и доработкой меню.</item>
+        <item>- Сделать заказ суши на дом или в офис Вы можете как через сайт, так и по телефону\n- При заказе у нас, доставка суши на дом или в офис производится в удобное для Вас время</item>
+    </string-array>
+
+</resources>
