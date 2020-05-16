@@ -178,7 +178,10 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
                         getContext(),
                         R.drawable.ic_delete_white_24dp,
                         Color.RED,
-                        pos -> deleteProductFromOrderlist(pos)
+                        pos -> {
+                            binding.btnOrderIt.setVisibility(View.GONE);
+                            deleteProductFromOrderlist(pos);
+                        }
                 ));
 
             }

@@ -36,6 +36,7 @@ import com.timsterj.ronin.utils.ItemSwipeCallback;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -135,22 +136,17 @@ public class ProductFavoriteFragment extends MvpAppCompatFragment implements Pro
             @Override
             public void instantiateActionButton(RecyclerView.ViewHolder viewHolder, List<ItemButtonAction> buffer) {
                 buffer.add(new ItemButtonAction(
-                        getContext(),
+                        Objects.requireNonNull(getContext()),
                         R.drawable.ic_delete_white_24dp,
                         Color.RED,
-                        pos -> {
-                            deleteProductFromFavorite(pos);
-
-                        }
+                        pos -> deleteProductFromFavorite(pos)
                 ));
 
                 buffer.add(new ItemButtonAction(
                         getContext(),
                         R.drawable.ic_shopping_basket_white_24dp,
                         Color.GREEN,
-                        pos -> {
-                            addProductFromFavoriteToOrderlist(pos);
-                        }
+                        pos -> addProductFromFavoriteToOrderlist(pos)
                 ));
 
             }
@@ -201,7 +197,7 @@ public class ProductFavoriteFragment extends MvpAppCompatFragment implements Pro
         } else {
             order.getProductItems().add(favoritesProducts.get(position).getProduct());
             presenter.addOrderList(order);
-            ((NotificationListener) getActivity()).incTabNotification(1);
+            ((NotificationListener) Objects.requireNonNull(getActivity())).incTabNotification(1);
             ((NotificationListener) getActivity()).updateTabNotification();
         }
 
@@ -212,7 +208,15 @@ public class ProductFavoriteFragment extends MvpAppCompatFragment implements Pro
 
     @Override
     public void onProductClick(Product product) {
-        ((FavoriteFragment) getParentFragment()).onProductInfoOpen(product);
+        Bundle arguments = new Bundle();
+
+        arguments.putString("root_tab", Contracts.NavigationConstant.TAB_FAVORITE);
+        arguments.putString("product_id", product.getId());
+        arguments.putString("product_url", product.getImgUrl());
+        arguments.putString("product_name", product.getName());
+        arguments.putInt("product_price", product.getPrice());
+
+        getRouter().navigateTo(new Screens.ProductInfoScreen(Contracts.NavigationConstant.PRODUCT_INFO, arguments));
 
     }
 
@@ -247,7 +251,7 @@ public class ProductFavoriteFragment extends MvpAppCompatFragment implements Pro
 
     @Override
     public void onBackPressed() {
-
+        getRouter().exit();
     }
 
     @Override

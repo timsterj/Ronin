@@ -49,10 +49,18 @@ public class FavoriteFragment extends MvpAppCompatFragment implements OnBackPres
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_favorite, container, false);
-        binding = FragmentFavoriteBinding.bind(view);
+        return binding.getRoot();
+    }
 
-        adapter = new FavoritesPagerAdapter(getChildFragmentManager(), PagerAdapter.POSITION_NONE);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = FragmentFavoriteBinding.inflate(getLayoutInflater());
+        InjectHelper.plusHomeComponent().inject(this);
+
+        if (getFragmentManager() != null) {
+            adapter = new FavoritesPagerAdapter(getFragmentManager(), PagerAdapter.POSITION_NONE);
+        }
 
 
         if (savedInstanceState != null) {
@@ -60,15 +68,6 @@ public class FavoriteFragment extends MvpAppCompatFragment implements OnBackPres
         }
 
         init();
-
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        InjectHelper.plusHomeComponent().inject(this);
-
 
     }
     private void init() {
@@ -87,19 +86,6 @@ public class FavoriteFragment extends MvpAppCompatFragment implements OnBackPres
 
     }
 
-    void onProductInfoOpen(Product product){
-        Bundle arguments = new Bundle();
-
-        arguments.putString("root_tab", Contracts.NavigationConstant.TAB_FAVORITE);
-        arguments.putString("product_id", product.getId());
-        arguments.putString("product_url", product.getImgUrl());
-        arguments.putString("product_name", product.getName());
-        arguments.putInt("product_price", product.getPrice());
-
-        getRouter().navigateTo(new Screens.ProductInfoScreen(Contracts.NavigationConstant.PRODUCT_INFO, arguments));
-
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -114,7 +100,7 @@ public class FavoriteFragment extends MvpAppCompatFragment implements OnBackPres
     }
 
     @Override
-    public void onBackPressed() { // TODO Решить с cicerone проблема с removeView();
+    public void onBackPressed() {
         getRouter().exit();
     }
 

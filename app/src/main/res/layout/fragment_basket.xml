@@ -28,7 +28,7 @@
 
   <Button
       android:id="@+id/btn_order_it"
-      android:layout_margin="32dp"
+      android:layout_margin="50dp"
       android:background="@color/colorPrimary"
       android:textColor="@android:color/white"
       android:visibility="gone"
