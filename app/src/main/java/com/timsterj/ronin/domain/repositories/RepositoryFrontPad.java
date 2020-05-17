@@ -27,8 +27,6 @@ import retrofit2.Retrofit;
 
 public class RepositoryFrontPad implements IRepositoryFrontPad {
 
-    private static final String TAG = "RepositoryFrontPad";
-
     private ICallbackFinishedListener<Product> mCallback;
 
     @Inject
