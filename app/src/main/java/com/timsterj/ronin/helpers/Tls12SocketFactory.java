@@ -58,6 +58,7 @@ public class Tls12SocketFactory extends SSLSocketFactory {
         if (s instanceof SSLSocket) {
             ((SSLSocket) s).setEnabledProtocols(TLS_V12_ONLY);
         }
+
         return s;
     }
 

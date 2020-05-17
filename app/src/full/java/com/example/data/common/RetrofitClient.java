@@ -53,7 +53,7 @@ public class RetrofitClient {
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init((KeyStore) null);
             TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
-            if (trustManagers.length != 1 || (trustManagers[0] instanceof X509TrustManager)) {
+            if (trustManagers.length != 1 || !(trustManagers[0] instanceof X509TrustManager)) {
                 throw new IllegalStateException();
             }
             trustManager = (X509TrustManager) trustManagers[0];
