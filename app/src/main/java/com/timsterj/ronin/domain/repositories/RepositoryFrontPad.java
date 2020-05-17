@@ -1,5 +1,7 @@
 package com.timsterj.ronin.domain.repositories;
 
+import android.util.Log;
+
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.data.model.Product;
 import com.timsterj.ronin.domain.api.FrontPadApi;
@@ -8,6 +10,8 @@ import com.timsterj.ronin.domain.modelDTO.ProductDTO;
 import com.timsterj.ronin.helpers.BindHelper;
 import com.timsterj.ronin.helpers.InjectHelper;
 import com.timsterj.ronin.listeners.ICallbackFinishedListener;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +55,7 @@ public class RepositoryFrontPad implements IRepositoryFrontPad {
                             mCallback.onSuccess(productsLists);
                         }, t -> {
                             mCallback.onError();
+                            Log.d(Contracts.TAG, "getProducts: Error: " + t.getMessage());
                             t.printStackTrace();
                         }, () -> {
                             clear();
