@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import com.timsterj.ronin.App;
 import com.timsterj.ronin.R;
 import com.timsterj.ronin.contracts.Contracts;
-import com.timsterj.ronin.databinding.FragmentSignInBinding;
 import com.timsterj.ronin.listeners.OnBackPressed;
 import com.timsterj.ronin.navigation.Screens;
 

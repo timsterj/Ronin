@@ -1,6 +1,5 @@
 package com.timsterj.data.common;
 
-import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.helpers.Tls12SocketFactory;
 
 import java.security.KeyManagementException;

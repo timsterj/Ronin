@@ -7,6 +7,7 @@ import com.timsterj.ronin.common.Session;
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.contracts.mvp.OrderInfoContract;
 import com.timsterj.ronin.data.local.DAO.OrderDoneDao;
+import com.timsterj.ronin.data.model.Order;
 import com.timsterj.ronin.data.model.OrderDone;
 import com.timsterj.ronin.data.model.Product;
 import com.timsterj.ronin.data.model.User;
@@ -15,6 +16,7 @@ import com.timsterj.ronin.helpers.InjectHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -60,12 +62,6 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
         StringBuilder orderlist = new StringBuilder();
         OrderDone orderDone = orderDones.get(index);
 
-        String status = orderDone.getStatus();
-        String date = orderDone.getDate();
-        String orderId = orderDone.getOrder_id();
-
-        String location = mUser.getStreet() + mUser.getHome() + mUser.getApart() + mUser.getEt() + mUser.getPod();
-
         int price = 0;
         for (Product product : orderDone.getOrderList()) {
             price = price + (product.getCount() * product.getPrice());
@@ -76,51 +72,25 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
                     .append("\n");
         }
 
-        getViewState().showOrderDoneInfo(
-                status,
-                orderId,
-                mUser.getName() + " " + mUser.getPhoneNumber(),
-                date,
-                location,
-                orderlist.toString()
-        );
-
-
-        int finalPrice = price;
-
-        disposableBag.add(
-                getFrontPadApi().getStatus(
-                        Contracts.RetrofitConstant.FRONT_PAD_SECRET,
-                        orderDone.getOrder_id(),
-                        mUser.getPhoneNumber()
-                )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(value -> {
-                            orderDone.setPrice(String.valueOf(finalPrice));
-                            orderDone.setStatus(value.getStatus());
-
-                            getViewState().showOrderDoneInfo(
-                                    orderDone.getStatus(),
-                                    orderId,
-                                    mUser.getName() + " " + mUser.getPhoneNumber(),
-                                    date,
-                                    location,
-                                    orderlist.toString()
-                            );
-
-                            updateOrder(value.getStatus(), orderDone.getOrder_id());
-                            getViewState().startOrderStatusService();
-                        })
-        );
-
+        updateOrder(orderDone, orderlist, price);
     }
 
-    private void updateOrder(String status, String id) {
+    private void updateOrder(OrderDone orderDone, StringBuilder orderList, int price) {
+        String location = mUser.getStreet() + mUser.getHome() + mUser.getApart() + mUser.getEt() + mUser.getPod();
+
         disposableBag.add(
-                orderDoneDao.updateOrderStatus(status, id)
+                orderDoneDao.updateOrderStatus(orderDone.getStatus(), orderDone.getOrder_id(), price, false)
                         .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(() -> {
+                            getViewState().showOrderDoneInfo(
+                                    orderDone.getStatus(),
+                                    orderDone.getOrder_id(),
+                                    mUser.getName() + " " + mUser.getPhoneNumber(),
+                                    orderDone.getDate(),
+                                    location,
+                                    orderList.toString()
+                            );
 
                         }, t -> {
                             Log.d(Contracts.TAG, "error: " + t.getMessage());

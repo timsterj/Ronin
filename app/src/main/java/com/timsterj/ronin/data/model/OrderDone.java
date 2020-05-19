@@ -1,8 +1,10 @@
 package com.timsterj.ronin.data.model;
 
 
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
@@ -17,27 +19,49 @@ import java.util.List;
 public class OrderDone {
 
     @NotNull
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+
     @ColumnInfo(name = "order_id")
     private String order_id;
 
     @ColumnInfo(name = "order_status")
     private String status;
 
-    private String price;
+    @ColumnInfo(name = "order_price")
+    private int price;
+
     private String date;
     private String result;
     private String order_number;
+
+    @ColumnInfo(name = "order_notified")
     private boolean notified = false;
 
     @TypeConverters(ProductTypeConverter.class)
     public List<Product> orderList = new ArrayList<>();
 
 
+    public OrderDone(String order_id, String status, int price, String date, String result, String order_number, boolean notified, List<Product> orderList) {
+        this.order_id = order_id;
+        this.status = status;
+        this.price = price;
+        this.date = date;
+        this.result = result;
+        this.order_number = order_number;
+        this.notified = notified;
+        this.orderList = orderList;
+    }
+
+    @Ignore
     public OrderDone(String result, String order_id, String order_number) {
         this.result = result;
         this.order_id = order_id;
         this.order_number = order_number;
+    }
+
+    @Ignore
+    public OrderDone() {
     }
 
     public String getResult() {
@@ -88,11 +112,11 @@ public class OrderDone {
         this.date = date;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
@@ -102,5 +126,18 @@ public class OrderDone {
 
     public void setNotified(boolean notified) {
         this.notified = notified;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return order_id.equals(((OrderDone) obj).getOrder_id());
     }
 }

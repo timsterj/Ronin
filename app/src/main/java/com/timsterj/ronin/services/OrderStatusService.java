@@ -3,6 +3,7 @@ package com.timsterj.ronin.services;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,9 +18,12 @@ import com.timsterj.ronin.common.Session;
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.data.local.DAO.OrderDoneDao;
 import com.timsterj.ronin.data.local.DAO.UserDao;
+import com.timsterj.ronin.data.model.Order;
 import com.timsterj.ronin.data.model.OrderDone;
 import com.timsterj.ronin.data.model.User;
 import com.timsterj.ronin.domain.api.FrontPadApi;
+
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -58,29 +62,6 @@ public class OrderStatusService extends Service {
                 .getAppDatabase()
                 .getUserDao();
 
-        Toast.makeText(this, "OnCreate Сервиса", Toast.LENGTH_SHORT).show();
-
-        notificationManager = NotificationManagerCompat.from(this);
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        init();
-
-        disposableBag.add(
-                Observable.interval(20, TimeUnit.SECONDS)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(time -> {
-                            Toast.makeText(this, "5 сек. ", Toast.LENGTH_SHORT).show();
-                            startCheckStatus();
-                        })
-        );
-
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    private void init() {
         disposableBag.add(
                 userDao.getUser()
                         .subscribeOn(Schedulers.io())
@@ -89,35 +70,55 @@ public class OrderStatusService extends Service {
                         })
         );
 
+        notificationManager = NotificationManagerCompat.from(this);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+
+        disposableBag.add(
+                Observable.interval(20, TimeUnit.SECONDS)
+                        .subscribe(value -> {
+                            startCheckStatus();
+
+                        })
+
+        );
+
+        return START_NOT_STICKY;
     }
 
     private void startCheckStatus() {
+
         disposableBag.add(
                 orderDoneDao.getAllOrders()
                         .subscribeOn(Schedulers.io())
                         .subscribe(value -> {
-                            if (checkAllDone(value)) {
+                            if (checkLastOrderPrepared()) {
                                 stopSelf();
                             } else {
                                 getStatus(value);
-                                Session.getINSTANCE().getOrderDoneList().onNext(value);
                             }
+
+                            Session.getINSTANCE().getOrderDoneList().onNext(value);
 
                         })
         );
 
+
     }
 
     private void getStatus(List<OrderDone> orderDones) {
+        disposableBag.add(
+                Observable.fromIterable(orderDones)
+                        .take(orderDones.size())
+                        .subscribe(value -> {
+                            doGetStatusResponse(value);
 
-        for (OrderDone orderDone : orderDones) {
-            Log.d(Contracts.TAG, "clear_order_status: " + orderDone.getStatus());
+                        })
 
-            if (!orderDone.getStatus().equals("Выполнен")) {
-                doGetStatusResponse(orderDone);
-            }
+        );
 
-        }
     }
 
 
@@ -129,52 +130,71 @@ public class OrderStatusService extends Service {
                         orderDone.getOrder_id(),
                         mUser.getPhoneNumber()
                 )
-                        .subscribeOn(Schedulers.newThread())
                         .subscribe(value -> {
-                            orderDone.setStatus(value.getStatus());
+                            updateOrderDaoDB(value.getStatus(), orderDone.getStatus(), orderDone.getOrder_id(),orderDone.getPrice(), orderDone.isNotified());
 
-                            Log.d(Contracts.TAG, "response_orderId: " + orderDone.getOrder_id() + " value: " + value.getStatus() + " order_number: " + orderDone.getOrder_number());
-                            updateOrderDaoDB(orderDone.getOrder_id(), value.getStatus());
-                        }, t->{
+                        }, t -> {
                             Log.d(Contracts.TAG, "error: " + t.getMessage());
                         })
         );
 
 
-
     }
 
-    private void updateOrderDaoDB(String status, String id) {
-        Log.d(Contracts.TAG, "response_orderId: " + id + " value: " + status);
-        disposableBag.add(
-                orderDoneDao.updateOrderStatus(status, id)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(() -> {
-                            sendOnOrderStatusChannel(status, id);
-                        }, t->{
-                            Log.d(Contracts.TAG, "error: " + t.getMessage());
-                        })
-        );
-    }
+    private void updateOrderDaoDB(String status, String preStatus, String id, int price, boolean isNotified) {
 
-    private boolean checkAllDone(List<OrderDone> orderDones) {
-        boolean allDone = true;
+        if (preStatus.equals(status)) {
+            if (!isNotified) {
+                disposableBag.add(
+                        orderDoneDao.updateOrderStatus(status, id, price,true)
+                                .subscribe(() -> {
+                                    sendOnOrderStatusChannel(id, status);
 
-        for (OrderDone orderDone : orderDones) {
-            if (!orderDone.getStatus().equals("Выполнен") || !orderDone.getStatus().equals("Списан")) {
-                allDone = false;
+                                }, t -> {
+                                    Log.d(Contracts.TAG, "error: " + t.getMessage());
+                                })
+                );
             }
+
+        } else {
+            disposableBag.add(
+                    orderDoneDao.updateOrderStatus(status, id, price, false)
+                            .subscribe(() -> {
+
+                            }, t -> {
+                                Log.d(Contracts.TAG, "error: " + t.getMessage());
+                            })
+            );
+
         }
 
-        return allDone;
+
     }
 
-    private void sendOnOrderStatusChannel(String id, String status){
+    private boolean checkLastOrderPrepared() {
+        List<OrderDone> orderDones = Session.getINSTANCE().getOrderDoneList().getValue();
+        OrderDone orderDone = null;
+
+        if (!orderDones.isEmpty()) {
+            orderDone = orderDones.get(orderDones.size() - 1);
+        }
+
+        if (orderDone == null) {
+            return true;
+        }
+
+        if (!orderDone.getStatus().equals("Выполнен") || !orderDone.getStatus().equals("Списан")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void sendOnOrderStatusChannel(String id, String status) {
         Notification notification = new NotificationCompat.Builder(this, Contracts.ORDER_STATUS_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_favorite_red_24dp)
-                .setContentTitle("Заказ номер: " + id)
-                .setContentText("Статус заказа: " + status)
+                .setContentTitle("Последний заказ: №" + id)
+                .setContentText("Статус: " + status)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                 .build();

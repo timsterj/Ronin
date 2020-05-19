@@ -1,5 +1,6 @@
 package com.timsterj.ronin.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.timsterj.ronin.helpers.InjectHelper;
 import com.timsterj.ronin.listeners.OnBackPressed;
 import com.timsterj.ronin.navigation.LocalCiceroneHolder;
 import com.timsterj.ronin.presenters.OrderHistoryPresenter;
+import com.timsterj.ronin.services.OrderStatusService;
 
 import javax.inject.Inject;
 
@@ -64,6 +66,11 @@ public class OrderHistoryFragment extends MvpAppCompatFragment implements OrderH
         presenter.init();
 
         init();
+
+        // TODO Тестирую сервис
+        Intent orderStatusService = new Intent(getContext(), OrderStatusService.class);
+        getActivity().startService(orderStatusService);
+
     }
 
     @Nullable
@@ -79,7 +86,7 @@ public class OrderHistoryFragment extends MvpAppCompatFragment implements OrderH
     }
 
     private void initRvOrderHistory() {
-        LinearLayoutManager manager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false);
+        LinearLayoutManager manager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, true);
 
         binding.rvOrderHistory.setAdapter(adapter);
 
