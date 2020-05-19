@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.ServiceCompat;
 
 import com.timsterj.ronin.App;
 import com.timsterj.ronin.R;
@@ -36,7 +37,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
-public class OrderStatusService extends Service {
+public class LastOrderStatusService extends Service {
 
     private CompositeDisposable disposableBag = new CompositeDisposable();
     private OrderDoneDao orderDoneDao;
@@ -47,7 +48,7 @@ public class OrderStatusService extends Service {
     @Inject
     Retrofit retrofit;
 
-    public OrderStatusService() {
+    public LastOrderStatusService() {
         super();
     }
 

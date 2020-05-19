@@ -2,7 +2,7 @@ package com.timsterj.ronin.contracts;
 
 public class Contracts {
     public static final String APP_PREFERENCES = "ronin_settings";
-    public static final String ORDER_STATUS_CHANNEL_ID = "Order_Status_Channel";
+    public static final String ORDER_STATUS_CHANNEL_ID = "Last_Order_Status_Channel";
 
     public static final String TAG = "Ronin_";
 

@@ -92,6 +92,7 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
                                     orderList.toString()
                             );
 
+                            getViewState().startLastOrderStatusService();
                         }, t -> {
                             Log.d(Contracts.TAG, "error: " + t.getMessage());
                         })

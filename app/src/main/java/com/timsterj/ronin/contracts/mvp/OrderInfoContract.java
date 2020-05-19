@@ -9,7 +9,7 @@ public interface OrderInfoContract {
     @StateStrategyType(AddToEndSingleStrategy.class)
     interface View extends MvpView {
         void showOrderDoneInfo(String status, String orderID, String clientInfo, String date, String location, String orderlist);
-        void startOrderStatusService();
+        void startLastOrderStatusService();
 
     }
 

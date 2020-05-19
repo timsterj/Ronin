@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +21,7 @@ import com.timsterj.ronin.helpers.InjectHelper;
 import com.timsterj.ronin.listeners.OnBackPressed;
 import com.timsterj.ronin.navigation.LocalCiceroneHolder;
 import com.timsterj.ronin.presenters.OrderHistoryPresenter;
-import com.timsterj.ronin.services.OrderStatusService;
+import com.timsterj.ronin.services.LastOrderStatusService;
 
 import javax.inject.Inject;
 
@@ -66,10 +67,6 @@ public class OrderHistoryFragment extends MvpAppCompatFragment implements OrderH
         presenter.init();
 
         init();
-
-        // TODO Тестирую сервис
-        Intent orderStatusService = new Intent(getContext(), OrderStatusService.class);
-        getActivity().startService(orderStatusService);
 
     }
 

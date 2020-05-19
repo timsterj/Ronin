@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.timsterj.ronin.common.Session;
 import com.timsterj.ronin.contracts.Contracts;
@@ -18,7 +19,7 @@ import com.timsterj.ronin.listeners.OnBackPressed;
 import com.timsterj.ronin.navigation.LocalCiceroneHolder;
 import com.timsterj.ronin.navigation.Screens;
 import com.timsterj.ronin.presenters.OrderInfoPresenter;
-import com.timsterj.ronin.services.OrderStatusService;
+import com.timsterj.ronin.services.LastOrderStatusService;
 
 import javax.inject.Inject;
 
@@ -99,10 +100,9 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
     }
 
     @Override
-    public void startOrderStatusService() {
-        Intent orderStatusService = new Intent(getContext(), OrderStatusService.class);
-        getActivity().startService(orderStatusService);
-
+    public void startLastOrderStatusService() {
+        Intent lastOrderStatusService = new Intent(getContext(), LastOrderStatusService.class);
+        ContextCompat.startForegroundService(getContext(), lastOrderStatusService);
     }
 
     @Override

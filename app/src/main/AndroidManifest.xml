@@ -28,7 +28,7 @@
 
 
         <service
-            android:name=".services.OrderStatusService"
+            android:name=".services.LastOrderStatusService"
             android:exported="false" />
     </application>
 
