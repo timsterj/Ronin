@@ -102,7 +102,7 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
     @Override
     public void startLastOrderStatusService() {
         Intent lastOrderStatusService = new Intent(getContext(), LastOrderStatusService.class);
-        ContextCompat.startForegroundService(getContext(), lastOrderStatusService);
+        ContextCompat.startForegroundService(getActivity(), lastOrderStatusService);
     }
 
     @Override
