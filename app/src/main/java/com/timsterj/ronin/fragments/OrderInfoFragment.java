@@ -1,6 +1,5 @@
 package com.timsterj.ronin.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +7,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.timsterj.ronin.common.Session;
 import com.timsterj.ronin.contracts.Contracts;
@@ -19,7 +21,9 @@ import com.timsterj.ronin.listeners.OnBackPressed;
 import com.timsterj.ronin.navigation.LocalCiceroneHolder;
 import com.timsterj.ronin.navigation.Screens;
 import com.timsterj.ronin.presenters.OrderInfoPresenter;
-import com.timsterj.ronin.services.LastOrderStatusService;
+import com.timsterj.ronin.services.LastOrderStatusWorker;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -101,8 +105,14 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
 
     @Override
     public void startLastOrderStatusService() {
-        Intent lastOrderStatusService = new Intent(getContext(), LastOrderStatusService.class);
-        ContextCompat.startForegroundService(getActivity(), lastOrderStatusService);
+        Constraints constraints = new Constraints.Builder()
+                .build();
+
+        PeriodicWorkRequest lastOrderStatusRequest = new PeriodicWorkRequest.Builder(LastOrderStatusWorker.class, 15, TimeUnit.MINUTES)
+                .setConstraints(constraints)
+                .build();
+
+        WorkManager.getInstance(getActivity()).enqueue(lastOrderStatusRequest);
     }
 
     @Override

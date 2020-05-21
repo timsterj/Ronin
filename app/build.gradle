@@ -141,6 +141,10 @@ dependencies {
     implementation "com.jakewharton.rxbinding3:rxbinding:$rx_binding_version"
     implementation "com.jakewharton.rxbinding3:rxbinding-recyclerview:$rx_binding_version"
 
+    def work_version = "2.3.4"
+    // WorkManager
+    implementation "androidx.work:work-runtime:$work_version"
+
     // BottomNavigationBar
     implementation 'com.aurelhubert:ahbottomnavigation:2.3.4'
 

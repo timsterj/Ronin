@@ -7,13 +7,20 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.multidex.MultiDex;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.data.local.AppDatabase;
 import com.timsterj.ronin.di.AppComponent;
 import com.timsterj.ronin.di.DaggerAppComponent;
+import com.timsterj.ronin.services.LastOrderStatusWorker;
+
+import java.util.concurrent.TimeUnit;
 
 public class App extends Application {
+
+    // TODO Применить WorkManager вместо Foreground Service.
 
     private static App INSTANCE;
 
@@ -44,7 +51,7 @@ public class App extends Application {
     }
 
 
-    private void createNotificationChannel(){
+    private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "order_status_channel";
 
@@ -54,6 +61,7 @@ public class App extends Application {
                     NotificationManager.IMPORTANCE_DEFAULT
             );
 
+            channel.setImportance(NotificationManager.IMPORTANCE_DEFAULT);
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);

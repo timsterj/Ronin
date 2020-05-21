@@ -1,6 +1,5 @@
 package com.timsterj.ronin.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,9 +7,12 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.timsterj.ronin.adapters.OrderHistoryAdapter;
 import com.timsterj.ronin.common.Session;
@@ -21,7 +23,9 @@ import com.timsterj.ronin.helpers.InjectHelper;
 import com.timsterj.ronin.listeners.OnBackPressed;
 import com.timsterj.ronin.navigation.LocalCiceroneHolder;
 import com.timsterj.ronin.presenters.OrderHistoryPresenter;
-import com.timsterj.ronin.services.LastOrderStatusService;
+import com.timsterj.ronin.services.LastOrderStatusWorker;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -67,6 +71,7 @@ public class OrderHistoryFragment extends MvpAppCompatFragment implements OrderH
         presenter.init();
 
         init();
+
 
     }
 

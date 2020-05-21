@@ -3,6 +3,7 @@
     package="com.timsterj.ronin">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name="com.timsterj.ronin.App"
@@ -27,9 +28,6 @@
         </activity>
 
 
-        <service
-            android:name=".services.LastOrderStatusService"
-            android:exported="false" />
     </application>
 
 </manifest>

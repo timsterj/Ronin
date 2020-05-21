@@ -33,6 +33,9 @@ public class OrderViewHolder extends BaseViewHolder<OrderDone> {
         binding.txtOrderInfo.setText(orderInfo.toString());
         binding.txtOrderStatus.setText("Статус заказа: " + status);
 
+        if (status == null) {
+            status = "Новый";
+        }
 
         if (status.equals("Новый")) {
             binding.txtOrderStatus.setTextColor(Color.RED);

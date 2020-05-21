@@ -14,7 +14,7 @@ import com.timsterj.ronin.di.modules.RetrofitModule;
 import com.timsterj.ronin.fragments.AuthorizationFragment;
 import com.timsterj.ronin.fragments.SignUpFragment;
 import com.timsterj.ronin.presenters.AuthorizationPresenter;
-import com.timsterj.ronin.services.LastOrderStatusService;
+import com.timsterj.ronin.services.LastOrderStatusWorker;
 
 import javax.inject.Singleton;
 
@@ -34,7 +34,8 @@ import dagger.Component;
 public interface AppComponent {
 
     //Service
-    void inject(LastOrderStatusService lastOrderStatusService);
+//    void inject(LastOrderStatusService lastOrderStatusService);
+    void inject(LastOrderStatusWorker lastOrderStatusWorker);
 
     //Activity
     void inject(AuthorizationActivity authorizationActivity);

@@ -1,10 +1,13 @@
 package com.timsterj.ronin.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
@@ -15,8 +18,10 @@ import com.timsterj.ronin.databinding.ActivityHomeBinding;
 import com.timsterj.ronin.listeners.NotificationListener;
 import com.timsterj.ronin.listeners.OnBackPressed;
 import com.timsterj.ronin.presenters.HomePresenter;
+import com.timsterj.ronin.services.LastOrderStatusWorker;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import moxy.MvpAppCompatActivity;
 import moxy.presenter.InjectPresenter;
@@ -32,6 +37,8 @@ public class HomeActivity extends MvpAppCompatActivity implements HomeContract.V
     private int tabFavoriteNotificationCount = 0;
     private int tabSearchNotificationCount = 0;
 
+    private static Context mContext;
+
     @InjectPresenter
     HomePresenter presenter;
 
@@ -40,6 +47,7 @@ public class HomeActivity extends MvpAppCompatActivity implements HomeContract.V
         super.onCreate(savedInstanceState);
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        mContext = getApplicationContext();
 
         initBottomNavigationBar();
         initPresenter();
@@ -159,6 +167,13 @@ public class HomeActivity extends MvpAppCompatActivity implements HomeContract.V
         }
     }
 
+    public static void startWorker(){
+        OneTimeWorkRequest lastOrderStatusRequest = new OneTimeWorkRequest.Builder(LastOrderStatusWorker.class)
+                .setInitialDelay(15, TimeUnit.SECONDS)
+                .build();
+
+        WorkManager.getInstance(mContext).enqueue(lastOrderStatusRequest);
+    }
 
     @Override
     public void onBackPressed() {
