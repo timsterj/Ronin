@@ -1,30 +1,26 @@
 package com.timsterj.ronin.services;
 
 import android.app.Notification;
-import android.app.Service;
-import android.content.Intent;
-import android.os.Handler;
-import android.os.IBinder;
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.app.ServiceCompat;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 
 import com.timsterj.ronin.App;
 import com.timsterj.ronin.R;
+import com.timsterj.ronin.activities.HomeActivity;
 import com.timsterj.ronin.common.Session;
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.data.local.DAO.OrderDoneDao;
 import com.timsterj.ronin.data.local.DAO.UserDao;
-import com.timsterj.ronin.data.model.Order;
 import com.timsterj.ronin.data.model.OrderDone;
 import com.timsterj.ronin.data.model.User;
 import com.timsterj.ronin.domain.api.FrontPadApi;
-
-import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -37,7 +33,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 
-public class LastOrderStatusService extends Service {
+public class LastOrderStatusWorker extends Worker {
 
     private CompositeDisposable disposableBag = new CompositeDisposable();
     private OrderDoneDao orderDoneDao;
@@ -48,13 +44,21 @@ public class LastOrderStatusService extends Service {
     @Inject
     Retrofit retrofit;
 
-    public LastOrderStatusService() {
-        super();
+    public LastOrderStatusWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+        super(context, workerParams);
     }
 
+    @NonNull
     @Override
-    public void onCreate() {
-        super.onCreate();
+    public Result doWork() {
+        init();
+
+        startCheckStatus();
+
+        return Result.success();
+    }
+
+    private void init(){
         App.getINSTANCE().getAppComponent().inject(this);
         orderDoneDao = App.getINSTANCE()
                 .getAppDatabase()
@@ -65,40 +69,27 @@ public class LastOrderStatusService extends Service {
 
         disposableBag.add(
                 userDao.getUser()
-                        .subscribeOn(Schedulers.io())
                         .subscribe(user -> {
                             mUser = user;
                         })
         );
 
-        notificationManager = NotificationManagerCompat.from(this);
-    }
+        notificationManager = NotificationManagerCompat.from(getApplicationContext());
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-
-        disposableBag.add(
-                Observable.interval(20, TimeUnit.SECONDS)
-                        .subscribe(value -> {
-                            startCheckStatus();
-
-                        })
-
-        );
-
-        return START_NOT_STICKY;
     }
 
     private void startCheckStatus() {
 
         disposableBag.add(
                 orderDoneDao.getAllOrders()
-                        .subscribeOn(Schedulers.io())
+                        .delay(200, TimeUnit.MILLISECONDS)
                         .subscribe(value -> {
                             if (checkLastOrderPrepared()) {
-                                stopSelf();
+                                onStopped();
+
                             } else {
                                 getStatus(value);
+
                             }
 
                             Session.getINSTANCE().getOrderDoneList().onNext(value);
@@ -112,10 +103,9 @@ public class LastOrderStatusService extends Service {
     private void getStatus(List<OrderDone> orderDones) {
         disposableBag.add(
                 Observable.fromIterable(orderDones)
-                        .take(orderDones.size())
+                        .lastElement()
                         .subscribe(value -> {
                             doGetStatusResponse(value);
-
                         })
 
         );
@@ -131,8 +121,9 @@ public class LastOrderStatusService extends Service {
                         orderDone.getOrder_id(),
                         mUser.getPhoneNumber()
                 )
+
                         .subscribe(value -> {
-                            updateOrderDaoDB(value.getStatus(), orderDone.getStatus(), orderDone.getOrder_id(),orderDone.getPrice(), orderDone.isNotified());
+                            updateOrderDaoDB(value.getStatus(), orderDone.getStatus(), orderDone.getOrder_id(), orderDone.getPrice(), orderDone.isNotified());
 
                         }, t -> {
                             Log.d(Contracts.TAG, "error: " + t.getMessage());
@@ -147,7 +138,8 @@ public class LastOrderStatusService extends Service {
         if (preStatus.equals(status)) {
             if (!isNotified) {
                 disposableBag.add(
-                        orderDoneDao.updateOrderStatus(status, id, price,true)
+                        orderDoneDao.updateOrderStatus(status, id, price, true)
+                                .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(() -> {
                                     sendOnOrderStatusChannel(id, status);
 
@@ -160,6 +152,7 @@ public class LastOrderStatusService extends Service {
         } else {
             disposableBag.add(
                     orderDoneDao.updateOrderStatus(status, id, price, false)
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(() -> {
 
                             }, t -> {
@@ -176,23 +169,27 @@ public class LastOrderStatusService extends Service {
         List<OrderDone> orderDones = Session.getINSTANCE().getOrderDoneList().getValue();
         OrderDone orderDone = null;
 
+        if (orderDones == null) {
+            return true;
+        }
         if (!orderDones.isEmpty()) {
             orderDone = orderDones.get(orderDones.size() - 1);
         }
-
         if (orderDone == null) {
             return true;
         }
 
-        if (!orderDone.getStatus().equals("Выполнен") || !orderDone.getStatus().equals("Списан")) {
-            return false;
+        if (orderDone.getStatus() == null) {
+            return true;
         }
 
-        return true;
+        return orderDone.getStatus().equals("Выполнен") && orderDone.getStatus().equals("Списан");
     }
 
     private void sendOnOrderStatusChannel(String id, String status) {
-        Notification notification = new NotificationCompat.Builder(this, Contracts.ORDER_STATUS_CHANNEL_ID)
+        Log.d(Contracts.TAG, "doWork: notification: " + status);
+
+        Notification notification = new NotificationCompat.Builder(getApplicationContext(), Contracts.ORDER_STATUS_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_favorite_red_24dp)
                 .setContentTitle("Последний заказ: №" + id)
                 .setContentText("Статус: " + status)
@@ -201,8 +198,6 @@ public class LastOrderStatusService extends Service {
                 .build();
 
         notificationManager.notify(Integer.parseInt(id), notification);
-
-
     }
 
 
@@ -210,15 +205,10 @@ public class LastOrderStatusService extends Service {
         return retrofit.create(FrontPadApi.class);
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStopped() {
+        super.onStopped();
         disposableBag.clear();
     }
 }
