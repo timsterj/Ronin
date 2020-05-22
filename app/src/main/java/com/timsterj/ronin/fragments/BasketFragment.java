@@ -1,5 +1,6 @@
 package com.timsterj.ronin.fragments;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -63,6 +64,9 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
     @InjectPresenter
     BasketPresenter presenter;
 
+
+    @Inject
+    SharedPreferences sharedPreferences;
     @Inject
     OrderListAdapter adapter;
     @Inject
@@ -122,10 +126,23 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
     }
 
     private void init() {
+        showTutorial();
+
         initSubscribers();
         initRvOrderList();
         initBtnHistory();
         initBtnOrder();
+
+    }
+
+    @Override
+    public void showTutorial() {
+        boolean firstRun = sharedPreferences.getBoolean(Contracts.PreferencesConstant.BASKET_TAB_FIRST_RUN, true);
+
+        if (firstRun) {
+            getRouter().navigateTo(new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, Contracts.NavigationConstant.TAB_BASKET));
+            sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.BASKET_TAB_FIRST_RUN, false).apply();
+        }
 
     }
 

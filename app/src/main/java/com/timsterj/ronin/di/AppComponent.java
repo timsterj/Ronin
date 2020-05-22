@@ -34,7 +34,6 @@ import dagger.Component;
 public interface AppComponent {
 
     //Service
-//    void inject(LastOrderStatusService lastOrderStatusService);
     void inject(LastOrderStatusWorker lastOrderStatusWorker);
 
     //Activity

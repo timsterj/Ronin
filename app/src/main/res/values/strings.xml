@@ -30,8 +30,8 @@
     <string name="error_internet">Нет интернет соединения</string>
     <string name="error_internet_description">Интернет не обнаружен, при первом запуске обязательно интернет соединение.</string>
 
-    <string name="error_empty_orders">Тут пусто! Закажите что-нибудь!</string>
-    <string name="error_empty_orderlist">Выберите что-нибудь! Корзина пуста :)</string>
+    <string name="error_empty_orders">Тут так пусто! Закажите что-нибудь!</string>
+    <string name="error_empty_orderlist">Выберите что-нибудь! Корзина такая пустая :)</string>
 
     <string name="home_about_us_etc" >О нас, скидки и акции</string>
     <string name="home_might_like" >Могут понравится</string>

@@ -66,36 +66,33 @@ public class HomeActivity extends MvpAppCompatActivity implements HomeContract.V
         binding.bottomNavigationBar.addItem(new AHBottomNavigationItem(getResources().getString(R.string.tab_favorite_name), R.drawable.ic_favorite_red_24dp));
         binding.bottomNavigationBar.addItem(new AHBottomNavigationItem(getResources().getString(R.string.tab_search_name), R.drawable.ic_search_red_24dp));
 
-        binding.bottomNavigationBar.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
-            @Override
-            public boolean onTabSelected(int position, boolean wasSelected) {
+        binding.bottomNavigationBar.setOnTabSelectedListener((position, wasSelected) -> {
 
-                switch (position) {
-                    case 0:
-                        tabHomeNotificationCount = 0;
-                        updateTabNotification();
-                        selectTab(Contracts.NavigationConstant.TAB_HOME, position);
-                        break;
-                    case 1:
-                        tabBasketNotificationCount = 0;
-                        updateTabNotification();
-                        selectTab(Contracts.NavigationConstant.TAB_BASKET, position);
-                        break;
-                    case 2:
-                        tabFavoriteNotificationCount = 0;
-                        updateTabNotification();
-                        selectTab(Contracts.NavigationConstant.TAB_FAVORITE, position);
-                        break;
-                    case 3:
-                        tabSearchNotificationCount = 0;
-                        updateTabNotification();
-                        selectTab(Contracts.NavigationConstant.TAB_SEARCH, position);
-                        break;
-                }
-                binding.bottomNavigationBar.setCurrentItem(position, false);
-
-                return false;
+            switch (position) {
+                case 0:
+                    tabHomeNotificationCount = 0;
+                    updateTabNotification();
+                    selectTab(Contracts.NavigationConstant.TAB_HOME, position);
+                    break;
+                case 1:
+                    tabBasketNotificationCount = 0;
+                    updateTabNotification();
+                    selectTab(Contracts.NavigationConstant.TAB_BASKET, position);
+                    break;
+                case 2:
+                    tabFavoriteNotificationCount = 0;
+                    updateTabNotification();
+                    selectTab(Contracts.NavigationConstant.TAB_FAVORITE, position);
+                    break;
+                case 3:
+                    tabSearchNotificationCount = 0;
+                    updateTabNotification();
+                    selectTab(Contracts.NavigationConstant.TAB_SEARCH, position);
+                    break;
             }
+            binding.bottomNavigationBar.setCurrentItem(position, false);
+
+            return false;
         });
     }
 
@@ -165,14 +162,6 @@ public class HomeActivity extends MvpAppCompatActivity implements HomeContract.V
                 tabSearchNotificationCount++;
                 break;
         }
-    }
-
-    public static void startWorker(){
-        OneTimeWorkRequest lastOrderStatusRequest = new OneTimeWorkRequest.Builder(LastOrderStatusWorker.class)
-                .setInitialDelay(15, TimeUnit.SECONDS)
-                .build();
-
-        WorkManager.getInstance(mContext).enqueue(lastOrderStatusRequest);
     }
 
     @Override

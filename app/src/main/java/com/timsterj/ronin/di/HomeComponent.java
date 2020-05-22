@@ -12,6 +12,7 @@ import com.timsterj.ronin.fragments.OrderInfoFragment;
 import com.timsterj.ronin.fragments.ProductFavoriteFragment;
 import com.timsterj.ronin.fragments.ProductInfoFragment;
 import com.timsterj.ronin.fragments.SearchFragment;
+import com.timsterj.ronin.fragments.TutorialFragment;
 import com.timsterj.ronin.fragments.UserInfoFragment;
 import com.timsterj.ronin.navigation.TabContainerFragment;
 import com.timsterj.ronin.presenters.HomeFragmentPresenter;
@@ -51,5 +52,6 @@ public interface HomeComponent {
     void inject(OrderInfoFragment orderInfoFragment);
     void inject(OrderHistoryFragment orderHistoryFragment);
     void inject(UserInfoFragment userInfoFragment);
+    void inject(TutorialFragment tutorialFragment);
 
 }

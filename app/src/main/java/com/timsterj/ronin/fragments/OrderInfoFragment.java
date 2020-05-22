@@ -106,6 +106,7 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
     @Override
     public void startLastOrderStatusService() {
         Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
 
         PeriodicWorkRequest lastOrderStatusRequest = new PeriodicWorkRequest.Builder(LastOrderStatusWorker.class, 15, TimeUnit.MINUTES)

@@ -14,6 +14,7 @@ import com.timsterj.ronin.fragments.OrderInfoFragment;
 import com.timsterj.ronin.fragments.ProductInfoFragment;
 import com.timsterj.ronin.fragments.SearchFragment;
 import com.timsterj.ronin.fragments.SignUpFragment;
+import com.timsterj.ronin.fragments.TutorialFragment;
 import com.timsterj.ronin.fragments.UserInfoFragment;
 
 import ru.terrakok.cicerone.android.support.SupportAppScreen;
@@ -199,6 +200,22 @@ public class Screens {
         @Override
         public Fragment getFragment() {
             return UserInfoFragment.getNewInstance(name);
+        }
+    }
+
+    public static final class TurorialScreen extends SupportAppScreen {
+
+        private final String name;
+        private final String rootTab;
+
+        public TurorialScreen(String name, String rootTab) {
+            this.name = name;
+            this.rootTab = rootTab;
+        }
+
+        @Override
+        public Fragment getFragment() {
+            return TutorialFragment.getNewInstance(name, rootTab);
         }
     }
 

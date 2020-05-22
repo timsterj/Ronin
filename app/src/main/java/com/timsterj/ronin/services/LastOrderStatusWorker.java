@@ -116,7 +116,6 @@ public class LastOrderStatusWorker extends Worker {
                         orderDone.getOrder_id(),
                         mUser.getPhoneNumber()
                 )
-
                         .subscribe(value -> {
                             updateOrderDaoDB(value.getStatus(), orderDone.getStatus(), orderDone.getOrder_id(), orderDone.getPrice(), orderDone.isNotified());
 
@@ -189,7 +188,7 @@ public class LastOrderStatusWorker extends Worker {
                 .setContentTitle("Последний заказ: №" + id)
                 .setContentText("Статус: " + status)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setCategory(NotificationCompat.CATEGORY_EVENT)
                 .build();
 
         notificationManager.notify(Integer.parseInt(id), notification);

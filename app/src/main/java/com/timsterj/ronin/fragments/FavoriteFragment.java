@@ -1,5 +1,6 @@
 package com.timsterj.ronin.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,9 @@ public class FavoriteFragment extends MvpAppCompatFragment implements OnBackPres
 
     private FavoritesPagerAdapter adapter;
 
+
+    @Inject
+    SharedPreferences sharedPreferences;
     @Inject
     LocalCiceroneHolder ciceroneHolder;
 
@@ -71,8 +75,21 @@ public class FavoriteFragment extends MvpAppCompatFragment implements OnBackPres
 
     }
     private void init() {
+        showTutorial();
+
         initTabFavorites();
         initRvFavorites();
+    }
+
+
+    private void showTutorial() {
+        boolean firstRun = sharedPreferences.getBoolean(Contracts.PreferencesConstant.FAVORITE_TAB_FIRST_RUN, true);
+
+        if (firstRun) {
+            getRouter().navigateTo(new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, Contracts.NavigationConstant.TAB_FAVORITE));
+            sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.FAVORITE_TAB_FIRST_RUN, false).apply();
+        }
+
     }
 
     private void initTabFavorites() {

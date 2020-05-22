@@ -7,16 +7,11 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.multidex.MultiDex;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.data.local.AppDatabase;
 import com.timsterj.ronin.di.AppComponent;
 import com.timsterj.ronin.di.DaggerAppComponent;
-import com.timsterj.ronin.services.LastOrderStatusWorker;
-
-import java.util.concurrent.TimeUnit;
 
 public class App extends Application {
 

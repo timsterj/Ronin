@@ -1,8 +1,10 @@
 package com.timsterj.ronin.fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -53,6 +55,9 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
     @InjectPresenter
     HomeFragmentPresenter presenter;
 
+
+    @Inject
+    SharedPreferences sharedPreferences;
     @Inject
     AboutUsAdapter aboutUsAdapter;
     @Inject
@@ -104,6 +109,18 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
         initRvAboutUs();
         initRvMightLike();
         initBtnUserInfo();
+
+    }
+
+    @Override
+    public void showTutorial() {
+        boolean firstRun = sharedPreferences.getBoolean(Contracts.PreferencesConstant.HOME_TAB_FIRST_RUN, true);
+
+        if (firstRun) {
+            getRouter().navigateTo(new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, Contracts.NavigationConstant.TAB_HOME));
+
+            sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.HOME_TAB_FIRST_RUN, false).apply();
+        }
 
     }
 

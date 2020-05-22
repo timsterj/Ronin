@@ -41,6 +41,12 @@ public class Contracts {
         public static final String FIRST_RUN = "first-run";
 
         public static final String REGISTRATION_TYPE = "reg-type";
+
+        public static final String HOME_TAB_FIRST_RUN = "home_tab_first_run";
+        public static final String BASKET_TAB_FIRST_RUN = "basket_tab_first_run";
+        public static final String FAVORITE_TAB_FIRST_RUN = "favorite_tab_first_run-type";
+        public static final String SEARCH_TAB_FIRST_RUN = "search_tab_first_run";
+
     }
 
     public static final class NavigationConstant {
@@ -65,6 +71,8 @@ public class Contracts {
         public static final String ORDER_HISTORY = "order_done_info";
 
         public static final String USER_INFO = "user_info";
+
+        public static final String TUTORIAL = "tutorial";
 
     }
 

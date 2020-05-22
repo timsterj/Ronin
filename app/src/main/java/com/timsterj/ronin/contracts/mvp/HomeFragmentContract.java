@@ -17,6 +17,7 @@ public interface HomeFragmentContract {
         void updateMightLikeList(List<ProductItem> mightLikeList);
         void updateAboutUsList(List<AboutUsItem> aboutUsList);
 
+        void showTutorial();
     }
 
     interface Presenter {

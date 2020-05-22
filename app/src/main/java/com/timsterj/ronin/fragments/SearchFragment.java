@@ -1,5 +1,6 @@
 package com.timsterj.ronin.fragments;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -69,6 +70,9 @@ public class SearchFragment extends MvpAppCompatFragment implements SearchContra
 
     private LinearLayoutManager manager;
 
+
+    @Inject
+    SharedPreferences sharedPreferences;
     @Inject
     ProductAdapter adapter;
     @Inject
@@ -120,11 +124,23 @@ public class SearchFragment extends MvpAppCompatFragment implements SearchContra
     }
 
     private void init() {
+        showTutorial();
 
         initSubscribers();
         initTabLayout();
         initSearchView();
         initRvProducts();
+
+    }
+
+
+    private void showTutorial() {
+        boolean firstRun = sharedPreferences.getBoolean(Contracts.PreferencesConstant.SEARCH_TAB_FIRST_RUN, true);
+
+        if (firstRun) {
+            getRouter().navigateTo(new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, Contracts.NavigationConstant.TAB_SEARCH));
+            sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.SEARCH_TAB_FIRST_RUN, false).apply();
+        }
 
     }
 
