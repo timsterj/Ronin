@@ -101,14 +101,9 @@ public class LastOrderStatusWorker extends Worker {
     }
 
     private void getStatus(List<OrderDone> orderDones) {
-        disposableBag.add(
-                Observable.fromIterable(orderDones)
-                        .lastElement()
-                        .subscribe(value -> {
-                            doGetStatusResponse(value);
-                        })
+        OrderDone orderDone = orderDones.get(orderDones.size()-1);
 
-        );
+        doGetStatusResponse(orderDone);
 
     }
 
