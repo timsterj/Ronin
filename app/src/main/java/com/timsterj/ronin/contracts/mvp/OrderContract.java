@@ -22,6 +22,8 @@ public interface OrderContract {
         void showError();
         void hideError();
         void onSuccess(int index);
+
+        void startLastOrderStatusService();
     }
 
     interface Presenter {

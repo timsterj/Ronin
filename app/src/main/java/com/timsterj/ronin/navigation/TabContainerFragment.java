@@ -70,7 +70,6 @@ public class TabContainerFragment extends Fragment {
                 getRouter().newRootChain(getCurrentTabFragmentScreen(),
                         new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, getContainerName()));
 
-                sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.HOME_TAB_FIRST_RUN, false).apply();
             } else {
                 getRouter().newRootScreen(getCurrentTabFragmentScreen());
             }
@@ -81,7 +80,6 @@ public class TabContainerFragment extends Fragment {
                 getRouter().newRootChain(getCurrentTabFragmentScreen(),
                         new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, getContainerName()));
 
-                sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.BASKET_TAB_FIRST_RUN, false).apply();
             } else {
                 getRouter().newRootScreen(getCurrentTabFragmentScreen());
             }
@@ -91,7 +89,6 @@ public class TabContainerFragment extends Fragment {
             if (firstRun) {
                 getRouter().newRootChain(getCurrentTabFragmentScreen(),
                         new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, getContainerName()));
-                sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.FAVORITE_TAB_FIRST_RUN, false).apply();
             } else {
                 getRouter().newRootScreen(getCurrentTabFragmentScreen());
             }
@@ -101,7 +98,6 @@ public class TabContainerFragment extends Fragment {
             if (firstRun) {
                 getRouter().newRootChain(getCurrentTabFragmentScreen(),
                         new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, getContainerName()));
-                sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.SEARCH_TAB_FIRST_RUN, false).apply();
             } else {
                 getRouter().newRootScreen(getCurrentTabFragmentScreen());
             }

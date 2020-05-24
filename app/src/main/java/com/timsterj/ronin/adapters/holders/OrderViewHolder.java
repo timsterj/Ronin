@@ -9,10 +9,12 @@ import androidx.annotation.NonNull;
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.data.model.OrderDone;
 import com.timsterj.ronin.databinding.OrderHistoryItemBinding;
+import com.timsterj.ronin.listeners.IClickProductListener;
 
 public class OrderViewHolder extends BaseViewHolder<OrderDone> {
 
     private OrderHistoryItemBinding binding;
+    private IClickProductListener<OrderDone> listener;
 
     public OrderViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -28,14 +30,20 @@ public class OrderViewHolder extends BaseViewHolder<OrderDone> {
         orderInfo.append("ID заказа: ").append(data.getOrder_id()).append("\n");
         orderInfo.append("Время: ").append(data.getDate()).append("\n");
         orderInfo.append("Кол-во продуктов: ").append(data.getOrderList().size() + "").append("\n");
-        orderInfo.append("На сумму: ").append(data.getPrice()).append("\n");
+        orderInfo.append("На сумму: ").append(data.getPrice() + "").append("\n");
 
         binding.txtOrderInfo.setText(orderInfo.toString());
-        binding.txtOrderStatus.setText("Статус заказа: " + status);
 
-        if (status == null) {
-            status = "Новый";
-        }
+        binding.btnReorder.setOnClickListener(view->{
+            Log.d(Contracts.TAG, "REORDER");
+        });
+
+        binding.cardView.setOnClickListener(view->{
+            if (listener != null) {
+                listener.onProductClick(data);
+            }
+
+        });
 
         if (status.equals("Новый")) {
             binding.txtOrderStatus.setTextColor(Color.RED);
@@ -52,9 +60,15 @@ public class OrderViewHolder extends BaseViewHolder<OrderDone> {
             binding.txtOrderStatus.setTextColor(Color.DKGRAY);
         }
 
-        binding.btnReorder.setOnClickListener(view->{
-            Log.d(Contracts.TAG, "REORDER");
-        });
+        if (!status.equals("")) {
+            binding.txtOrderStatus.setText("Статус заказа: " + status);
+        }
 
+
+
+    }
+
+    public void setListener(IClickProductListener<OrderDone> listener) {
+        this.listener = listener;
     }
 }

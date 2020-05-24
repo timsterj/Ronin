@@ -1,5 +1,7 @@
 package com.timsterj.ronin.presenters;
 
+import android.util.Log;
+
 import com.timsterj.ronin.App;
 import com.timsterj.ronin.common.Session;
 import com.timsterj.ronin.contracts.Contracts;
@@ -37,7 +39,6 @@ public class OrderPresenter extends MvpPresenter<OrderContract.View> implements 
     private User mUser = null;
     private OrderDoneDao orderDoneDao;
 
-    private boolean firstPrepare = true;
     private int price = 0;
 
     @Inject
@@ -48,7 +49,13 @@ public class OrderPresenter extends MvpPresenter<OrderContract.View> implements 
         orderedProduct.clear();
         additionalList.clear();
 
-        mUser = Session.getINSTANCE().getUser().getValue();
+        disposableBag.add(
+                Session.getINSTANCE().getUser().subscribe(
+                        value -> {
+                            mUser = value;
+                        }
+                )
+        );
 
         orderDoneDao = App.getINSTANCE()
                 .getAppDatabase()
@@ -178,6 +185,14 @@ public class OrderPresenter extends MvpPresenter<OrderContract.View> implements 
 
         }
 
+        String location = "ул. " + mUser.getStreet() + ", " +
+                "д. " + mUser.getHome() + ", " +
+                "кв. " + mUser.getApart() + ", " +
+                "этаж " + mUser.getEt() + ", " +
+                "под. " + mUser.getPod();
+
+        Log.d(Contracts.TAG, "doOrder: name: " + mUser.getName());
+
         disposableBag.add(
                 getFrontPadApi().doOrder(
                         Contracts.RetrofitConstant.FRONT_PAD_SECRET,
@@ -188,13 +203,15 @@ public class OrderPresenter extends MvpPresenter<OrderContract.View> implements 
                         mUser.getEt(),
                         mUser.getApart(),
                         mUser.getPhoneNumber(),
-                        descr
+                        descr + "_" + mUser.getName() + "_"
                 )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(value -> {
                             value.setStatus("Новый");
                             value.setOrderList(orderList);
+
+                            value.setLocation(location);
 
                             addToDB(value);
                         }, t -> {
@@ -207,6 +224,7 @@ public class OrderPresenter extends MvpPresenter<OrderContract.View> implements 
     public void addToDB(OrderDone orderDone) {
 
         orderDone.setDate(DateUtil.getCurrentDate());
+        orderDone.setPrice(getPrice());
 
         List<OrderDone> orderDones = Session.getINSTANCE().getOrderDoneList().getValue();
 

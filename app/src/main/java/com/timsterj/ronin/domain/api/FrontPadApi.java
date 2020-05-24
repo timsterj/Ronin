@@ -9,6 +9,7 @@ import java.util.HashMap;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.RequestBody;
+import retrofit2.http.Field;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;

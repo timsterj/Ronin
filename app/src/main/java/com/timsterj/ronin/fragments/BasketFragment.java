@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,9 +65,6 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
     @InjectPresenter
     BasketPresenter presenter;
 
-
-    @Inject
-    SharedPreferences sharedPreferences;
     @Inject
     OrderListAdapter adapter;
     @Inject
@@ -126,23 +124,11 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
     }
 
     private void init() {
-        showTutorial();
 
         initSubscribers();
         initRvOrderList();
         initBtnHistory();
         initBtnOrder();
-
-    }
-
-    @Override
-    public void showTutorial() {
-        boolean firstRun = sharedPreferences.getBoolean(Contracts.PreferencesConstant.BASKET_TAB_FIRST_RUN, true);
-
-        if (firstRun) {
-            getRouter().navigateTo(new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, Contracts.NavigationConstant.TAB_BASKET));
-            sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.BASKET_TAB_FIRST_RUN, false).apply();
-        }
 
     }
 
@@ -241,17 +227,7 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
     }
 
     private void initBtnOrder() {
-        binding.btnOrderIt.setOnClickListener(view -> {
-            List<ProductItem> additionalList = Session.getINSTANCE().getAdditionalProducts().getValue();
 
-            for (ProductItem product : additionalList) {
-                product.getProduct().setCount(0);
-            }
-
-            Session.getINSTANCE().getAdditionalProducts().onNext(additionalList);
-
-            getRouter().navigateTo(new Screens.OrderScreen(Contracts.NavigationConstant.ORDER));
-        });
     }
 
     @Override
@@ -306,6 +282,27 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
         price = currentPrice;
 
         order.setScore(price);
+
+        if (price < 400) {
+            binding.btnOrderIt.setClickable(false);
+            binding.btnOrderIt.setOnClickListener(view -> {
+                Toast.makeText(getContext(), "Минимальная сумма заказа 400 руб.", Toast.LENGTH_LONG).show();
+            });
+
+        } else {
+            binding.btnOrderIt.setClickable(true);
+            binding.btnOrderIt.setOnClickListener(view -> {
+                List<ProductItem> additionalList = Session.getINSTANCE().getAdditionalProducts().getValue();
+
+                for (ProductItem product : additionalList) {
+                    product.getProduct().setCount(0);
+                }
+
+                Session.getINSTANCE().getAdditionalProducts().onNext(additionalList);
+
+                getRouter().navigateTo(new Screens.OrderScreen(Contracts.NavigationConstant.ORDER));
+            });
+        }
 
         binding.toolbarBasket.setTitle(price + " руб");
     }

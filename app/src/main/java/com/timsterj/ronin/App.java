@@ -15,8 +15,6 @@ import com.timsterj.ronin.di.DaggerAppComponent;
 
 public class App extends Application {
 
-    // TODO Применить WorkManager вместо Foreground Service.
-
     private static App INSTANCE;
 
     public static final App getINSTANCE() {

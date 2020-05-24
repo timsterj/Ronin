@@ -1,9 +1,11 @@
 package com.timsterj.ronin.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,9 +31,13 @@ public class TutorialFragment extends Fragment implements OnBackPressed {
 
     private AppCompatImageButton btnClose;
     private TextView txtTitle;
+    private Button btnOk;
 
     String title;
 
+
+    @Inject
+    SharedPreferences sharedPreferences;
     @Inject
     LocalCiceroneHolder ciceroneHolder;
 
@@ -70,15 +76,15 @@ public class TutorialFragment extends Fragment implements OnBackPressed {
                 title = getString(R.string.tab_home_name);
                 break;
             case Contracts.NavigationConstant.TAB_BASKET:
-                view = inflater.inflate(R.layout.fragment_home_tutorial, container, false);
+                view = inflater.inflate(R.layout.fragment_basket_tutorial, container, false);
                 title = getString(R.string.tab_basket_name);
                 break;
             case Contracts.NavigationConstant.TAB_FAVORITE:
-                view = inflater.inflate(R.layout.fragment_home_tutorial, container, false);
+                view = inflater.inflate(R.layout.fragment_favorite_tutorial, container, false);
                 title = getString(R.string.tab_favorite_name);
                 break;
             case Contracts.NavigationConstant.TAB_SEARCH:
-                view = inflater.inflate(R.layout.fragment_home_tutorial, container, false);
+                view = inflater.inflate(R.layout.fragment_search_tutorial, container, false);
                 title = getString(R.string.tab_search_name);
                 break;
             default:
@@ -94,8 +100,10 @@ public class TutorialFragment extends Fragment implements OnBackPressed {
 
         btnClose = view.findViewById(R.id.img_close);
         txtTitle = view.findViewById(R.id.txt_title);
+        btnOk = view.findViewById(R.id.btn_ok);
 
         initBtnClose();
+        initBtnOk();
         initTitle();
     }
 
@@ -111,6 +119,12 @@ public class TutorialFragment extends Fragment implements OnBackPressed {
 
     }
 
+    private void initBtnOk() {
+        btnOk.setOnClickListener(view->{
+            onBackPressed();
+        });
+    }
+
     public Cicerone<Router> getCicerone() {
         return ciceroneHolder.getCicerone(ROOT_TAB);
     }
@@ -121,7 +135,25 @@ public class TutorialFragment extends Fragment implements OnBackPressed {
 
     @Override
     public void onBackPressed() {
-        getRouter().exit();
+        switch (ROOT_TAB) {
+            case Contracts.NavigationConstant.TAB_HOME:
+                sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.HOME_TAB_FIRST_RUN, false).apply();
 
+                break;
+            case Contracts.NavigationConstant.TAB_BASKET:
+                sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.BASKET_TAB_FIRST_RUN, false).apply();
+
+                break;
+            case Contracts.NavigationConstant.TAB_FAVORITE:
+                sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.FAVORITE_TAB_FIRST_RUN, false).apply();
+
+                break;
+            case Contracts.NavigationConstant.TAB_SEARCH:
+                sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.SEARCH_TAB_FIRST_RUN, false).apply();
+                break;
+            default:
+                new IllegalArgumentException();
+        }
+        getRouter().exit();
     }
 }

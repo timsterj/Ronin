@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@android:color/transparent"
+                android:background="@android:color/white"
                 android:src="@drawable/ic_action_navigation_close"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -34,7 +34,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:fontFamily="sans-serif"
-                android:text="Главное"
+                android:text="@string/tab_basket_name"
                 android:textColor="@color/colorPrimary"
                 android:textSize="30sp"
                 android:textStyle="bold"
@@ -65,7 +65,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="5dp"
                 android:fontFamily="monospace"
-                android:text="@string/home_tutorial_text"
+                android:text="@string/basket_icon_action_text"
                 android:textAlignment="textStart"
                 android:typeface="normal" />
 
@@ -73,7 +73,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:src="@drawable/home_tutorial" />
+                android:src="@drawable/basket_tutorial" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -82,7 +82,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="5dp"
                 android:fontFamily="monospace"
-                android:text="@string/home_icon_action_text"
+                android:text="@string/basket_swipe_action_text"
                 android:textAlignment="textStart"
                 android:typeface="normal" />
 

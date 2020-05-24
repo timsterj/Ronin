@@ -12,8 +12,6 @@ public interface BasketContract {
     interface View extends MvpView {
         void showErrorEmptyOrderlist();
         void hideErrorEmptyOrderlist();
-
-        void showTutorial();
     }
 
 

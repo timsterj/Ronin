@@ -4,6 +4,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import com.timsterj.ronin.data.local.converters.OrderDoneTypeConverter;
 import com.timsterj.ronin.data.local.converters.OrderTypeConverter;
 import com.timsterj.ronin.data.local.converters.ProductItemTypeConverter;
 import com.timsterj.ronin.model.ProductItem;
@@ -20,8 +21,8 @@ public class Favorite {
     @TypeConverters(ProductItemTypeConverter .class)
     private List<ProductItem> productList = new ArrayList<>();
 
-    @TypeConverters(OrderTypeConverter.class)
-    private List<Order> orderList = new ArrayList<>();
+    @TypeConverters(OrderDoneTypeConverter.class)
+    private List<OrderDone> orderList = new ArrayList<>();
 
 
     public void setFavorite_id(int favorite_id) {
@@ -40,11 +41,11 @@ public class Favorite {
         this.productList = productList;
     }
 
-    public List<Order> getOrderList() {
+    public List<OrderDone> getOrderList() {
         return orderList;
     }
 
-    public void setOrderList(List<Order> orderList) {
+    public void setOrderList(List<OrderDone> orderList) {
         this.orderList = orderList;
     }
 }

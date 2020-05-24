@@ -78,7 +78,7 @@ public class LaunchActivity extends MvpAppCompatActivity implements LaunchContra
         boolean firstRun = sharedPreferences.getBoolean(Contracts.PreferencesConstant.FIRST_RUN, true);
         if (firstRun) {
 
-            binding.buttonPrepareIsDone.setVisibility(View.GONE);
+            binding.imgLogo.setVisibility(View.GONE);
             binding.imgErrorInternet.setVisibility(View.VISIBLE);
             binding.textViewTitleErrorInternet.setVisibility(View.VISIBLE);
             binding.textViewDescription.setVisibility(View.VISIBLE);

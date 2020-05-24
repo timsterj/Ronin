@@ -9,6 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.timsterj.ronin.adapters.AdditionalFoodAdapter;
 import com.timsterj.ronin.common.Session;
@@ -23,8 +27,10 @@ import com.timsterj.ronin.navigation.LocalCiceroneHolder;
 import com.timsterj.ronin.navigation.Screens;
 import com.timsterj.ronin.presenters.OrderPresenter;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.timsterj.ronin.services.LastOrderStatusWorker;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -129,8 +135,22 @@ public class OrderFragment extends MvpAppCompatFragment implements OrderContract
 
     @Override
     public void onSuccess(int index) {
-        getRouter().navigateTo(new Screens.OrderInfoScreen(Contracts.NavigationConstant.ORDER_INFO, index));
+        startLastOrderStatusService();
+        getRouter().navigateTo(new Screens.OrderInfoScreen(Contracts.NavigationConstant.ORDER_INFO, index, Contracts.NavigationConstant.TAB_BASKET));
 
+    }
+
+    @Override
+    public void startLastOrderStatusService() {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        PeriodicWorkRequest lastOrderStatusRequest = new PeriodicWorkRequest.Builder(LastOrderStatusWorker.class, 15, TimeUnit.MINUTES)
+                .setConstraints(constraints)
+                .build();
+
+        WorkManager.getInstance(getActivity()).enqueue(lastOrderStatusRequest);
     }
 
     private void init() {

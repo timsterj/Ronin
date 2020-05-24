@@ -34,6 +34,8 @@ public class OrderDone {
     private String date;
     private String result;
     private String order_number;
+    @ColumnInfo(name = "order_location")
+    private String location;
 
     @ColumnInfo(name = "order_notified")
     private boolean notified = false;
@@ -134,6 +136,14 @@ public class OrderDone {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     @Override

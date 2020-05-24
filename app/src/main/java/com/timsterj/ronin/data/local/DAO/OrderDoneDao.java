@@ -17,8 +17,8 @@ public interface OrderDoneDao {
     @Insert
     Completable insertOrder(OrderDone orderDone);
 
-    @Query("UPDATE OrderDone SET order_price=:price, order_notified=:isNotified, order_status =:status WHERE order_id=:id")
-    Completable updateOrderStatus(String status, String id, int price,boolean isNotified);
+    @Query("UPDATE OrderDone SET order_location=:location, order_price=:price, order_notified=:isNotified, order_status =:status WHERE order_id=:id")
+    Completable updateOrderStatus(String status, String id, int price, String location, boolean isNotified);
 
     @Query("DELETE FROM `OrderDone`")
     Completable deleteAll();

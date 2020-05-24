@@ -1,6 +1,7 @@
 package com.timsterj.ronin.fragments;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +19,17 @@ import com.timsterj.ronin.adapters.OrderHistoryAdapter;
 import com.timsterj.ronin.common.Session;
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.contracts.mvp.OrderHistoryContract;
+import com.timsterj.ronin.data.model.OrderDone;
 import com.timsterj.ronin.databinding.FragmentOrderHistoryBinding;
 import com.timsterj.ronin.helpers.InjectHelper;
+import com.timsterj.ronin.listeners.IClickProductListener;
 import com.timsterj.ronin.listeners.OnBackPressed;
 import com.timsterj.ronin.navigation.LocalCiceroneHolder;
+import com.timsterj.ronin.navigation.Screens;
 import com.timsterj.ronin.presenters.OrderHistoryPresenter;
 import com.timsterj.ronin.services.LastOrderStatusWorker;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -37,13 +42,15 @@ import moxy.presenter.InjectPresenter;
 import ru.terrakok.cicerone.Cicerone;
 import ru.terrakok.cicerone.Router;
 
-public class OrderHistoryFragment extends MvpAppCompatFragment implements OrderHistoryContract.View, OnBackPressed {
+public class OrderHistoryFragment extends MvpAppCompatFragment implements OrderHistoryContract.View, IClickProductListener<OrderDone>, OnBackPressed {
 
     private static final String EXTRA_NAME = "extra_name";
 
     private CompositeDisposable disposableBag = new CompositeDisposable();
 
     private FragmentOrderHistoryBinding binding;
+
+    private LinearLayoutManager manager;
 
     @Inject
     LocalCiceroneHolder ciceroneHolder;
@@ -70,6 +77,10 @@ public class OrderHistoryFragment extends MvpAppCompatFragment implements OrderH
         binding = FragmentOrderHistoryBinding.inflate(getLayoutInflater());
         presenter.init();
 
+        if (savedInstanceState != null) {
+
+        }
+
         init();
 
 
@@ -88,7 +99,9 @@ public class OrderHistoryFragment extends MvpAppCompatFragment implements OrderH
     }
 
     private void initRvOrderHistory() {
-        LinearLayoutManager manager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, true);
+        manager = new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, true);
+
+        adapter.setListener(this);
 
         binding.rvOrderHistory.setAdapter(adapter);
 
@@ -104,9 +117,15 @@ public class OrderHistoryFragment extends MvpAppCompatFragment implements OrderH
                             if (!value.isEmpty()) {
                                 adapter.setOrderDoneList(value);
                                 hideError();
+                                manager.scrollToPositionWithOffset(value.size()-1, 0);
+
                             } else {
                                 showError();
                             }
+
+                        },  t->{
+
+                        }, ()->{
 
                         })
         );
@@ -123,6 +142,15 @@ public class OrderHistoryFragment extends MvpAppCompatFragment implements OrderH
     public void hideError() {
         binding.rvOrderHistory.setVisibility(View.VISIBLE);
         binding.txtErrorEmptyOrderHistory.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onProductClick(OrderDone data) {
+        List<OrderDone> orderDones = Session.getINSTANCE().getOrderDoneList().getValue();
+
+        int index = orderDones.indexOf(data);
+
+        getRouter().navigateTo(new Screens.OrderInfoScreen(Contracts.NavigationConstant.ORDER_INFO, index, Contracts.NavigationConstant.TAB_BASKET));
     }
 
     public Cicerone<Router> getCicerone() {

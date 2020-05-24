@@ -6,7 +6,10 @@ import com.timsterj.ronin.App;
 import com.timsterj.ronin.common.Session;
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.contracts.mvp.OrderInfoContract;
+import com.timsterj.ronin.data.local.DAO.FavoriteDao;
+import com.timsterj.ronin.data.local.DAO.OrderDao;
 import com.timsterj.ronin.data.local.DAO.OrderDoneDao;
+import com.timsterj.ronin.data.model.Favorite;
 import com.timsterj.ronin.data.model.Order;
 import com.timsterj.ronin.data.model.OrderDone;
 import com.timsterj.ronin.data.model.Product;
@@ -32,6 +35,8 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
     private List<OrderDone> orderDones = new ArrayList<>();
     private User mUser;
     private OrderDoneDao orderDoneDao;
+    private OrderDao mOrderDao;
+    private FavoriteDao mFavoriteDao;
 
     @Inject
     Retrofit retrofit;
@@ -50,6 +55,12 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
         orderDoneDao = App.getINSTANCE()
                 .getAppDatabase()
                 .getOrderDoneDao();
+        mFavoriteDao = App.getINSTANCE()
+                .getAppDatabase()
+                .getFavoriteDao();
+        mOrderDao = App.getINSTANCE()
+                .getAppDatabase()
+                .getOrderDao();
 
     }
 
@@ -72,14 +83,13 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
                     .append("\n");
         }
 
-        updateOrder(orderDone, orderlist, price);
+        updateOrder(orderDone, orderlist, price, orderDone.getLocation());
     }
 
-    private void updateOrder(OrderDone orderDone, StringBuilder orderList, int price) {
-        String location = mUser.getStreet() + mUser.getHome() + mUser.getApart() + mUser.getEt() + mUser.getPod();
+    private void updateOrder(OrderDone orderDone, StringBuilder orderList, int price, String location) {
 
         disposableBag.add(
-                orderDoneDao.updateOrderStatus(orderDone.getStatus(), orderDone.getOrder_id(), price, false)
+                orderDoneDao.updateOrderStatus(orderDone.getStatus(), orderDone.getOrder_id(), price, location, false)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(() -> {
@@ -89,10 +99,10 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
                                     mUser.getName() + " " + mUser.getPhoneNumber(),
                                     orderDone.getDate(),
                                     location,
-                                    orderList.toString()
+                                    orderList.toString(),
+                                    price
                             );
 
-                            getViewState().startLastOrderStatusService();
                         }, t -> {
                             Log.d(Contracts.TAG, "error: " + t.getMessage());
                         })
@@ -100,4 +110,9 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposableBag.clear();
+    }
 }

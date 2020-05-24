@@ -12,17 +12,27 @@ import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.timsterj.ronin.R;
 import com.timsterj.ronin.common.Session;
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.contracts.mvp.OrderInfoContract;
+import com.timsterj.ronin.data.model.Favorite;
+import com.timsterj.ronin.data.model.Order;
+import com.timsterj.ronin.data.model.OrderDone;
 import com.timsterj.ronin.databinding.FragmentOrderInfoBinding;
 import com.timsterj.ronin.helpers.InjectHelper;
+import com.timsterj.ronin.listeners.NotificationListener;
 import com.timsterj.ronin.listeners.OnBackPressed;
+import com.timsterj.ronin.model.ProductItem;
 import com.timsterj.ronin.navigation.LocalCiceroneHolder;
 import com.timsterj.ronin.navigation.Screens;
 import com.timsterj.ronin.presenters.OrderInfoPresenter;
 import com.timsterj.ronin.services.LastOrderStatusWorker;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -41,18 +51,20 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
     private FragmentOrderInfoBinding binding;
     private CompositeDisposable disposableBag = new CompositeDisposable();
     private String ROOT_TAB = "";
+    int index;
 
     @Inject
     LocalCiceroneHolder ciceroneHolder;
     @InjectPresenter
     OrderInfoPresenter presenter;
 
-    public static OrderInfoFragment getNewInstance(String name, int index) {
+    public static OrderInfoFragment getNewInstance(String name, int index, String rootTab) {
         OrderInfoFragment fragment = new OrderInfoFragment();
 
         Bundle arguments = new Bundle();
         arguments.putString(EXTRA_NAME, name);
         arguments.putInt("index", index);
+        arguments.putString("root_tab", rootTab);
         fragment.setArguments(arguments);
 
         return fragment;
@@ -79,7 +91,8 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
     }
 
     private void init() {
-        int index = getArguments().getInt("index");
+        index = getArguments().getInt("index");
+        ROOT_TAB = getArguments().getString("root_tab");
 
         disposableBag.add(
                 Session.getINSTANCE().getOrderDoneList()
@@ -92,8 +105,10 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
     }
 
     @Override
-    public void showOrderDoneInfo(String status, String orderID, String clientInfo, String date, String location, String orderlist) {
-        binding.txtOrderStatus.setText("Статус заказа: " + status);
+    public void showOrderDoneInfo(String status, String orderID, String clientInfo, String date, String location, String orderlist, int price) {
+        if (!status.equals("")) {
+            binding.txtOrderStatus.setText("Статус заказа: " + status);
+        }
         binding.toolbarOrderInfo.setTitle(status);
         binding.txtOrderId.setText("ID заказа: " + orderID);
         binding.txtDate.setText("Время: " + date);
@@ -101,19 +116,10 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
         binding.txtLocation.setText("Адрес доставки: " + location);
         binding.txtOrderlist.setText(orderlist);
 
-    }
+        if (!status.equals("Новый")) {
+            binding.txtHelper.setVisibility(View.GONE);
+        }
 
-    @Override
-    public void startLastOrderStatusService() {
-        Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build();
-
-        PeriodicWorkRequest lastOrderStatusRequest = new PeriodicWorkRequest.Builder(LastOrderStatusWorker.class, 15, TimeUnit.MINUTES)
-                .setConstraints(constraints)
-                .build();
-
-        WorkManager.getInstance(getActivity()).enqueue(lastOrderStatusRequest);
     }
 
     @Override
@@ -123,7 +129,7 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
     }
 
     public Cicerone<Router> getCicerone() {
-        return ciceroneHolder.getCicerone(Contracts.NavigationConstant.TAB_BASKET);
+        return ciceroneHolder.getCicerone(ROOT_TAB);
     }
 
     public Router getRouter() {

@@ -162,16 +162,18 @@ public class Screens {
     public static final class OrderInfoScreen extends SupportAppScreen {
 
         private final String name;
+        private final String rootTab;
         private final int index;
 
-        public OrderInfoScreen(String name, int index) {
+        public OrderInfoScreen(String name, int index, String rootTab) {
             this.name = name;
             this.index = index;
+            this.rootTab = rootTab;
         }
 
         @Override
         public Fragment getFragment() {
-            return OrderInfoFragment.getNewInstance(name, index);
+            return OrderInfoFragment.getNewInstance(name, index, rootTab);
         }
     }
 

@@ -22,6 +22,8 @@ import com.timsterj.ronin.data.model.OrderDone;
 import com.timsterj.ronin.data.model.User;
 import com.timsterj.ronin.domain.api.FrontPadApi;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -58,7 +60,7 @@ public class LastOrderStatusWorker extends Worker {
         return Result.success();
     }
 
-    private void init(){
+    private void init() {
         App.getINSTANCE().getAppComponent().inject(this);
         orderDoneDao = App.getINSTANCE()
                 .getAppDatabase()
@@ -101,7 +103,7 @@ public class LastOrderStatusWorker extends Worker {
     }
 
     private void getStatus(List<OrderDone> orderDones) {
-        OrderDone orderDone = orderDones.get(orderDones.size()-1);
+        OrderDone orderDone = orderDones.get(orderDones.size() - 1);
 
         doGetStatusResponse(orderDone);
 
@@ -117,7 +119,7 @@ public class LastOrderStatusWorker extends Worker {
                         mUser.getPhoneNumber()
                 )
                         .subscribe(value -> {
-                            updateOrderDaoDB(value.getStatus(), orderDone.getStatus(), orderDone.getOrder_id(), orderDone.getPrice(), orderDone.isNotified());
+                            updateOrderDaoDB(value.getStatus(), orderDone.getStatus(), orderDone.getOrder_id(), orderDone.getPrice(), orderDone.getLocation(), orderDone.isNotified());
 
                         }, t -> {
                             Log.d(Contracts.TAG, "error: " + t.getMessage());
@@ -127,12 +129,16 @@ public class LastOrderStatusWorker extends Worker {
 
     }
 
-    private void updateOrderDaoDB(String status, String preStatus, String id, int price, boolean isNotified) {
+    private void updateOrderDaoDB(String status, String preStatus, String id, int price, String location, boolean isNotified) {
+        if (preStatus == null || status == null) {
+            Log.d(Contracts.TAG, "error: " + "preStatus: " + preStatus + " status: " + status);
+            return;
+        }
 
         if (preStatus.equals(status)) {
             if (!isNotified) {
                 disposableBag.add(
-                        orderDoneDao.updateOrderStatus(status, id, price, true)
+                        orderDoneDao.updateOrderStatus(status, id, price, location, true)
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(() -> {
                                     sendOnOrderStatusChannel(id, status);
@@ -145,7 +151,7 @@ public class LastOrderStatusWorker extends Worker {
 
         } else {
             disposableBag.add(
-                    orderDoneDao.updateOrderStatus(status, id, price, false)
+                    orderDoneDao.updateOrderStatus(status, id, price, location, false)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(() -> {
 
@@ -195,6 +201,7 @@ public class LastOrderStatusWorker extends Worker {
     }
 
 
+    @NotNull
     private FrontPadApi getFrontPadApi() {
         return retrofit.create(FrontPadApi.class);
     }

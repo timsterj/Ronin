@@ -2,8 +2,8 @@ package com.timsterj.ronin.listeners;
 
 import com.timsterj.ronin.data.model.Product;
 
-public interface IClickProductListener {
+public interface IClickProductListener<T> {
 
-    void onProductClick(Product product);
+    void onProductClick(T data);
 
 }

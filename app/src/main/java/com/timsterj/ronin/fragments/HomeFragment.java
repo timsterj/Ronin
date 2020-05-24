@@ -17,10 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.timsterj.ronin.adapters.AboutUsAdapter;
+import com.timsterj.ronin.adapters.OrderHistoryAdapter;
 import com.timsterj.ronin.adapters.ProductAdapter;
 import com.timsterj.ronin.common.Session;
 import com.timsterj.ronin.contracts.Contracts;
 import com.timsterj.ronin.contracts.mvp.HomeFragmentContract;
+import com.timsterj.ronin.data.model.OrderDone;
 import com.timsterj.ronin.data.model.Product;
 import com.timsterj.ronin.databinding.FragmentHomeBinding;
 import com.timsterj.ronin.helpers.InjectHelper;
@@ -31,6 +33,7 @@ import com.timsterj.ronin.navigation.LocalCiceroneHolder;
 import com.timsterj.ronin.navigation.Screens;
 import com.timsterj.ronin.presenters.HomeFragmentPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,7 +44,7 @@ import moxy.presenter.InjectPresenter;
 import ru.terrakok.cicerone.Cicerone;
 import ru.terrakok.cicerone.Router;
 
-public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentContract.View, IClickProductListener {
+public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentContract.View, IClickProductListener<Product> {
 
     private static final String EXTRA_NAME = "extra_name";
 
@@ -55,11 +58,10 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
     @InjectPresenter
     HomeFragmentPresenter presenter;
 
-
-    @Inject
-    SharedPreferences sharedPreferences;
     @Inject
     AboutUsAdapter aboutUsAdapter;
+    @Inject
+    OrderHistoryAdapter orderHistoryAdapter;
     @Inject
     ProductAdapter productAdapter;
     @Inject
@@ -108,23 +110,11 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
         initActions();
         initRvAboutUs();
         initRvMightLike();
+        initRvOrderDones();
         initBtnUserInfo();
 
     }
-
-    @Override
-    public void showTutorial() {
-        boolean firstRun = sharedPreferences.getBoolean(Contracts.PreferencesConstant.HOME_TAB_FIRST_RUN, true);
-
-        if (firstRun) {
-            getRouter().navigateTo(new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, Contracts.NavigationConstant.TAB_HOME));
-
-            sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.HOME_TAB_FIRST_RUN, false).apply();
-        }
-
-    }
-
-    public void initRvMightLike() {
+    private void initRvMightLike() {
 
         presenter.prepareMightLikeList();
 
@@ -152,6 +142,28 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
                 })
         );
 
+    }
+
+    private void initRvOrderDones() {
+        orderHistoryAdapter.setListener(null);
+
+        binding.rvLastOrder.setAdapter(orderHistoryAdapter);
+        binding.rvLastOrder.setNestedScrollingEnabled(false);
+        binding.rvLastOrder.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, true));
+
+        disposableBag.add(
+                Session.getINSTANCE().getOrderDoneList().subscribe(
+                        value -> {
+                            if (value.isEmpty()) {
+                                binding.rvLastOrder.setVisibility(View.GONE);
+                                binding.txtErrorOrderDoneEmpty.setVisibility(View.VISIBLE);
+                            } else {
+                                updateRvOrderDoneList(value);
+                            }
+                        }
+                )
+
+        );
     }
 
     private void initBtnUserInfo() {
@@ -189,6 +201,20 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
             intent.setData(Uri.parse("mailto:" + Contracts.ContactsConstant.SUPPORT_EMAIL));
             startActivity(intent);
         });
+
+    }
+
+    private void updateRvOrderDoneList(List<OrderDone> orderDones) {
+        List<OrderDone> curOrderDones = new ArrayList<>();
+
+
+        curOrderDones.add(orderDones.get(orderDones.size()-1));
+
+        orderHistoryAdapter.setOrderDoneList(curOrderDones);
+
+        binding.rvLastOrder.setVisibility(View.VISIBLE);
+        binding.txtErrorOrderDoneEmpty.setVisibility(View.GONE);
+
     }
 
     @Override

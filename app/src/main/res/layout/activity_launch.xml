@@ -6,11 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".activities.LaunchActivity">
 
-    <Button
-        android:id="@+id/button_prepareIsDone"
+    <ImageView
+        android:id="@+id/img_logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Следующий экран"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

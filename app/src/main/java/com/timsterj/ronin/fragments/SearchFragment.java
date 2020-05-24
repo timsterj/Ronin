@@ -54,7 +54,7 @@ import ru.terrakok.cicerone.Router;
 public class SearchFragment extends MvpAppCompatFragment implements SearchContract.View,
         OnBackPressed,
         ISwipedItemSearchListener,
-        IClickProductListener {
+        IClickProductListener<Product> {
 
     private static final String EXTRA_NAME = "extra_name";
 
@@ -70,9 +70,6 @@ public class SearchFragment extends MvpAppCompatFragment implements SearchContra
 
     private LinearLayoutManager manager;
 
-
-    @Inject
-    SharedPreferences sharedPreferences;
     @Inject
     ProductAdapter adapter;
     @Inject
@@ -124,23 +121,10 @@ public class SearchFragment extends MvpAppCompatFragment implements SearchContra
     }
 
     private void init() {
-        showTutorial();
-
         initSubscribers();
         initTabLayout();
         initSearchView();
         initRvProducts();
-
-    }
-
-
-    private void showTutorial() {
-        boolean firstRun = sharedPreferences.getBoolean(Contracts.PreferencesConstant.SEARCH_TAB_FIRST_RUN, true);
-
-        if (firstRun) {
-            getRouter().navigateTo(new Screens.TurorialScreen(Contracts.NavigationConstant.TUTORIAL, Contracts.NavigationConstant.TAB_SEARCH));
-            sharedPreferences.edit().putBoolean(Contracts.PreferencesConstant.SEARCH_TAB_FIRST_RUN, false).apply();
-        }
 
     }
 
