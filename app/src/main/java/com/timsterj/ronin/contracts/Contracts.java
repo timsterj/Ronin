@@ -47,6 +47,8 @@ public class Contracts {
         public static final String FAVORITE_TAB_FIRST_RUN = "favorite_tab_first_run-type";
         public static final String SEARCH_TAB_FIRST_RUN = "search_tab_first_run";
 
+        public static final String DAILY_ORDER_LIMIT = "daily_order_limit";
+        public static final String DAILY_ORDER_SIZE_LIMIT = "daily_order_size_limit";
     }
 
     public static final class NavigationConstant {

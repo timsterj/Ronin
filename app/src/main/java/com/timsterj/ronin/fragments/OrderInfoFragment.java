@@ -83,6 +83,7 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
         presenter.init();
         binding = FragmentOrderInfoBinding.inflate(getLayoutInflater());
 
+
         if (savedInstanceState != null) {
 
         }
@@ -94,22 +95,22 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
         index = getArguments().getInt("index");
         ROOT_TAB = getArguments().getString("root_tab");
 
-        disposableBag.add(
-                Session.getINSTANCE().getOrderDoneList()
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(value -> {
-                            presenter.initOrderDone(index);
-                        })
-        );
-
+        presenter.initOrderDone(index);
     }
 
     @Override
     public void showOrderDoneInfo(String status, String orderID, String clientInfo, String date, String location, String orderlist, int price) {
+        if (status == null) {
+            status = "Заказ был списан, либо удален (x_x)";
+
+        }
+
         if (!status.equals("")) {
             binding.txtOrderStatus.setText("Статус заказа: " + status);
+            binding.toolbarOrderInfo.setTitle(status);
+        } else {
+            binding.toolbarOrderInfo.setTitle("Информация");
         }
-        binding.toolbarOrderInfo.setTitle(status);
         binding.txtOrderId.setText("ID заказа: " + orderID);
         binding.txtDate.setText("Время: " + date);
         binding.txtClientInfo.setText("Клиент: " + clientInfo);
@@ -120,6 +121,13 @@ public class OrderInfoFragment extends MvpAppCompatFragment implements OrderInfo
             binding.txtHelper.setVisibility(View.GONE);
         }
 
+        if (status.equals("Заказ был списан, либо удален (x_x)")) {
+            binding.txtHelper.setVisibility(View.VISIBLE);
+            binding.txtHelper.setText(R.string.order_was_removed_helper_text);
+        }
+
+        binding.progressOrderInfo.setVisibility(View.GONE);
+        binding.nestedSv.setVisibility(View.VISIBLE);
     }
 
     @Override

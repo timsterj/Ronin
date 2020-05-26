@@ -1,6 +1,8 @@
 package com.timsterj.ronin.fragments;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +31,7 @@ import com.timsterj.ronin.presenters.OrderPresenter;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.timsterj.ronin.services.LastOrderStatusWorker;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -56,7 +59,8 @@ public class OrderFragment extends MvpAppCompatFragment implements OrderContract
     OrderPresenter presenter;
     @Inject
     AdditionalFoodAdapter adapter;
-
+    @Inject
+    SharedPreferences sharedPreferences;
 
     public static OrderFragment getNewInstance(String name) {
         OrderFragment fragment = new OrderFragment();
@@ -135,6 +139,9 @@ public class OrderFragment extends MvpAppCompatFragment implements OrderContract
 
     @Override
     public void onSuccess(int index) {
+        int pOrderSize = sharedPreferences.getInt(Contracts.PreferencesConstant.DAILY_ORDER_SIZE_LIMIT, 0);
+        sharedPreferences.edit().putInt(Contracts.PreferencesConstant.DAILY_ORDER_SIZE_LIMIT, pOrderSize+1).apply();
+
         startLastOrderStatusService();
         getRouter().navigateTo(new Screens.OrderInfoScreen(Contracts.NavigationConstant.ORDER_INFO, index, Contracts.NavigationConstant.TAB_BASKET));
 

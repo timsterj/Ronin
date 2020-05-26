@@ -11,12 +11,15 @@
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_order_info"
             app:titleTextColor="@android:color/white"
+            app:title="Секунду..."
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_sv"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
@@ -111,45 +114,15 @@
                 android:text="@string/thanks_for_order"
                 android:textSize="18sp" />
 
-            <LinearLayout
-                android:layout_weight="2"
-                android:orientation="horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-
-                <Button
-                    android:id="@+id/btn_reorder"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@color/colorPrimary"
-                    android:visibility="gone"
-                    android:clickable="false"
-                    android:text="Повторить"
-                    android:textColor="@android:color/white"/>
-
-                <Button
-                    android:id="@+id/btn_add_favorite"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@color/colorPrimary"
-                    android:text="Нравится"
-                    android:textColor="@android:color/white" />
-
-            </LinearLayout>
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/progress_order_info"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

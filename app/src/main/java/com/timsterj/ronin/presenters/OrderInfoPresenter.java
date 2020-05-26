@@ -1,5 +1,6 @@
 package com.timsterj.ronin.presenters;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.timsterj.ronin.App;
@@ -40,6 +41,9 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
 
     @Inject
     Retrofit retrofit;
+    @Inject
+    SharedPreferences sharedPreferences;
+    private int index = 0;
 
     public void init() {
         InjectHelper.plusHomeComponent().inject(this);
@@ -70,6 +74,8 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
 
     @Override
     public void initOrderDone(int index) {
+        this.index = index;
+
         StringBuilder orderlist = new StringBuilder();
         OrderDone orderDone = orderDones.get(index);
 
@@ -83,10 +89,22 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
                     .append("\n");
         }
 
-        updateOrder(orderDone, orderlist, price, orderDone.getLocation());
+        Log.d(Contracts.TAG, "index: " + index + " size: " + orderDones.size());
+        if (index == orderDones.size()-1) {
+            getStatus(orderDone, orderlist, price, orderDone.getLocation());
+
+        } else {
+            updateOrder(orderDone, orderlist, price, orderDone.getLocation());
+
+        }
+
     }
 
     private void updateOrder(OrderDone orderDone, StringBuilder orderList, int price, String location) {
+        List<OrderDone> orderDones = Session.getINSTANCE().getOrderDoneList().getValue();
+
+        orderDones.get(index).setStatus(orderDone.getStatus());
+
 
         disposableBag.add(
                 orderDoneDao.updateOrderStatus(orderDone.getStatus(), orderDone.getOrder_id(), price, location, false)
@@ -103,8 +121,29 @@ public class OrderInfoPresenter extends MvpPresenter<OrderInfoContract.View> imp
                                     price
                             );
 
+                            Session.getINSTANCE().getOrderDoneList().onNext(orderDones);
                         }, t -> {
                             Log.d(Contracts.TAG, "error: " + t.getMessage());
+                        })
+        );
+
+    }
+
+    private void getStatus(OrderDone orderDone, StringBuilder orderList, int price, String location) {
+        disposableBag.add(
+                getFrontPadApi().getStatus(
+                        Contracts.RetrofitConstant.FRONT_PAD_SECRET,
+                        orderDone.getOrder_id(),
+                        mUser.getPhoneNumber()
+                )
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(value -> {
+                            Log.d(Contracts.TAG, "Статус: " + value.getStatus());
+
+                            orderDone.setStatus(value.getStatus());
+
+                            updateOrder(orderDone, orderList, price, location);
                         })
         );
 

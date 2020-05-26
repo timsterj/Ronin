@@ -24,6 +24,7 @@ public interface OrderContract {
         void onSuccess(int index);
 
         void startLastOrderStatusService();
+
     }
 
     interface Presenter {

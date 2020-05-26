@@ -45,6 +45,10 @@ public class OrderViewHolder extends BaseViewHolder<OrderDone> {
 
         });
 
+        if (status == null) {
+            status = "Заказ был удален (x_x)";
+        }
+
         if (status.equals("Новый")) {
             binding.txtOrderStatus.setTextColor(Color.RED);
         } else if (status.equals("В производстве")){

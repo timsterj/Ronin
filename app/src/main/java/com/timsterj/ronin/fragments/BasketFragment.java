@@ -4,6 +4,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.telecom.Call;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +38,12 @@ import com.timsterj.ronin.utils.ItemButtonAction;
 import com.timsterj.ronin.utils.ItemSwipeCallback;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -69,6 +76,8 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
     OrderListAdapter adapter;
     @Inject
     LocalCiceroneHolder ciceroneHolder;
+    @Inject
+    SharedPreferences sharedPreferences;
 
     public static BasketFragment getNewInstance(String name) {
         BasketFragment fragment = new BasketFragment();
@@ -121,6 +130,53 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
         binding.btnOrderIt.setVisibility(View.VISIBLE);
         binding.txtErrorEmpty.setVisibility(View.GONE);
 
+    }
+
+    private boolean checkOrderLimit() {
+        long pTime = sharedPreferences.getLong(Contracts.PreferencesConstant.DAILY_ORDER_LIMIT, new Date().getTime());
+        int pOrderSize = sharedPreferences.getInt(Contracts.PreferencesConstant.DAILY_ORDER_SIZE_LIMIT, 0);
+
+        Calendar cCalendar = new GregorianCalendar(Locale.getDefault());
+        cCalendar.setTime(new Date());
+
+        Calendar pCalendar = new GregorianCalendar(Locale.getDefault());
+        pCalendar.setTimeInMillis(pTime);
+
+        Log.d(Contracts.TAG, "curDay: " + cCalendar.get(Calendar.DAY_OF_MONTH));
+        Log.d(Contracts.TAG, "pDay: " + cCalendar.get(Calendar.DAY_OF_MONTH));
+        Log.d(Contracts.TAG, "orderSize: " + pOrderSize);
+
+        if (pOrderSize >= 10) {
+            if (cCalendar.get(Calendar.DAY_OF_MONTH) < pCalendar.get(Calendar.DAY_OF_MONTH)) {
+                if (cCalendar.get(Calendar.MONTH) > pCalendar.get(Calendar.MONTH)) {
+                    sharedPreferences.edit().putLong(Contracts.PreferencesConstant.DAILY_ORDER_LIMIT, new Date().getTime()).apply();
+                    sharedPreferences.edit().putInt(Contracts.PreferencesConstant.DAILY_ORDER_SIZE_LIMIT, 0).apply();
+                    return true;
+                } else if (cCalendar.get(Calendar.MONTH) == pCalendar.get(Calendar.MONTH)) {
+                    Snackbar.make(binding.getRoot(), "В день по 10 заказов (0_0)", Snackbar.LENGTH_SHORT).show();
+
+                    return false;
+                }
+
+            } else if (cCalendar.get(Calendar.DAY_OF_MONTH) == pCalendar.get(Calendar.DAY_OF_MONTH)){
+                Snackbar.make(binding.getRoot(), "В день по 10 заказов (0_0)", Snackbar.LENGTH_SHORT).show();
+
+                return false;
+            } else if (cCalendar.get(Calendar.DAY_OF_MONTH) > pCalendar.get(Calendar.DAY_OF_MONTH)){
+                sharedPreferences.edit().putLong(Contracts.PreferencesConstant.DAILY_ORDER_LIMIT, new Date().getTime()).apply();
+                sharedPreferences.edit().putInt(Contracts.PreferencesConstant.DAILY_ORDER_SIZE_LIMIT, 0).apply();
+
+                return true;
+            }
+        } else if (pOrderSize == 9){
+            sharedPreferences.edit().putLong(Contracts.PreferencesConstant.DAILY_ORDER_LIMIT, new Date().getTime()).apply();
+
+            return true;
+        } else {
+            return true;
+        }
+
+        return false;
     }
 
     private void init() {
@@ -292,16 +348,19 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
         } else {
             binding.btnOrderIt.setClickable(true);
             binding.btnOrderIt.setOnClickListener(view -> {
-                List<ProductItem> additionalList = Session.getINSTANCE().getAdditionalProducts().getValue();
+                if (checkOrderLimit()) {
+                    List<ProductItem> additionalList = Session.getINSTANCE().getAdditionalProducts().getValue();
 
-                for (ProductItem product : additionalList) {
-                    product.getProduct().setCount(0);
+                    for (ProductItem product : additionalList) {
+                        product.getProduct().setCount(0);
+                    }
+
+                    Session.getINSTANCE().getAdditionalProducts().onNext(additionalList);
+
+                    getRouter().navigateTo(new Screens.OrderScreen(Contracts.NavigationConstant.ORDER));
                 }
-
-                Session.getINSTANCE().getAdditionalProducts().onNext(additionalList);
-
-                getRouter().navigateTo(new Screens.OrderScreen(Contracts.NavigationConstant.ORDER));
             });
+
         }
 
         binding.toolbarBasket.setTitle(price + " руб");

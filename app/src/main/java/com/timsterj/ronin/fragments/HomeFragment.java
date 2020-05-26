@@ -38,7 +38,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import moxy.MvpAppCompatFragment;
 import moxy.presenter.InjectPresenter;
 import ru.terrakok.cicerone.Cicerone;
@@ -122,6 +124,8 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
         binding.rvMightlike.setLayoutManager(managerMightLike);
 
         disposableBag.add(Session.getINSTANCE().getProductsMightLike()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(value -> {
                     updateMightLikeList(value);
                     binding.actionCommunication.setVisibility(View.VISIBLE);
@@ -137,6 +141,8 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
         binding.rvAboutUs.setLayoutManager(managerAboutUs);
 
         disposableBag.add(Session.getINSTANCE().getProductsAboutUs()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(value -> {
                     updateAboutUsList(value);
                 })
@@ -152,7 +158,10 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
         binding.rvLastOrder.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, true));
 
         disposableBag.add(
-                Session.getINSTANCE().getOrderDoneList().subscribe(
+                Session.getINSTANCE().getOrderDoneList()
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
                         value -> {
                             if (value.isEmpty()) {
                                 binding.rvLastOrder.setVisibility(View.GONE);
@@ -160,6 +169,9 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
                             } else {
                                 updateRvOrderDoneList(value);
                             }
+
+                            binding.progressHome.setVisibility(View.GONE);
+                            binding.nestedSv.setVisibility(View.VISIBLE);
                         }
                 )
 
@@ -222,12 +234,15 @@ public class HomeFragment extends MvpAppCompatFragment implements HomeFragmentCo
         productAdapter.setListener(this);
         productAdapter.setProductList(mightLikeLis);
         binding.rvMightlike.setAdapter(productAdapter);
+
     }
 
     @Override
     public void updateAboutUsList(List<AboutUsItem> aboutUsList) {
         aboutUsAdapter.setAboutUsList(aboutUsList);
         binding.rvAboutUs.setAdapter(aboutUsAdapter);
+
+
     }
 
     @Override

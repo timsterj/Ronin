@@ -3,14 +3,16 @@ package com.timsterj.ronin.fragments;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 import com.timsterj.ronin.R;
@@ -29,8 +31,7 @@ public class TutorialFragment extends Fragment implements OnBackPressed {
     private static final String EXTRA_NAME = "extra_name";
     private String ROOT_TAB = "";
 
-    private AppCompatImageButton btnClose;
-    private TextView txtTitle;
+    private Toolbar toolbar;
     private Button btnOk;
 
     String title;
@@ -98,8 +99,7 @@ public class TutorialFragment extends Fragment implements OnBackPressed {
 
     private void init(View view) {
 
-        btnClose = view.findViewById(R.id.img_close);
-        txtTitle = view.findViewById(R.id.txt_title);
+        toolbar = view.findViewById(R.id.toolbar_tutorial);
         btnOk = view.findViewById(R.id.btn_ok);
 
         initBtnClose();
@@ -108,14 +108,18 @@ public class TutorialFragment extends Fragment implements OnBackPressed {
     }
 
     private void initBtnClose() {
-        btnClose.setOnClickListener(view -> {
+        Menu menu = toolbar.getMenu();
+        MenuItem closeItem = menu.getItem(0);
+
+        closeItem.setOnMenuItemClickListener(item -> {
             onBackPressed();
+            return false;
         });
 
     }
 
     private void initTitle() {
-        txtTitle.setText(title);
+        toolbar.setTitle(title);
 
     }
 
