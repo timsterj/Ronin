@@ -95,6 +95,8 @@ public class ProductInfoFragment extends MvpAppCompatFragment implements Product
 
     private void initInfo(){
         String name = getArguments().getString("product_name");
+        String recept = getArguments().getString("product_recept");
+        String weight = getArguments().getString("product_weight");
         String imgUrl = getArguments().getString("product_url");
         int price = getArguments().getInt("product_price");
 
@@ -106,6 +108,8 @@ public class ProductInfoFragment extends MvpAppCompatFragment implements Product
 
         binding.txtFoodName.setText(name);
         binding.txtPrice.setText(price + " руб");
+        binding.txtRecept.setText(recept);
+        binding.txtWeight.setText(weight);
 
     }
 

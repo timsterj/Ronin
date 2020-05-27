@@ -213,6 +213,8 @@ public class FavoriteFragment extends MvpAppCompatFragment implements ProductFav
         arguments.putString("product_id", product.getId());
         arguments.putString("product_url", product.getImgUrl());
         arguments.putString("product_name", product.getName());
+        arguments.putString("product_recept", product.getRecept());
+        arguments.putString("product_weight", product.getWeight());
         arguments.putInt("product_price", product.getPrice());
 
         getRouter().navigateTo(new Screens.ProductInfoScreen(Contracts.NavigationConstant.PRODUCT_INFO, arguments));

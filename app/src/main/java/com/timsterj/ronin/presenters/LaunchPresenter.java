@@ -145,7 +145,7 @@ public class LaunchPresenter extends MvpPresenter<LaunchContract.View> implement
     }
 
 
-    public void getFavorite() {
+    private void getFavorite() {
 
         disposableBag.add(
                 mFavoriteDao.getFavoriteProducts()

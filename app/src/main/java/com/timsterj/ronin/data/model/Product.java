@@ -19,16 +19,20 @@ public class Product implements Comparable<Product> {
     private int price;
 
     private int count;
+    private String recept;
+    private String weight;
 
     @Ignore
     public Product() {
     }
 
-    public Product(@NotNull String id, String imgUrl, String name, int price) {
+    public Product(@NotNull String id, String imgUrl, String name, int price, String recept, String weight) {
         this.id = id;
         this.imgUrl = imgUrl;
         this.name = name;
         this.price = price;
+        this.recept = recept;
+        this.weight = weight;
     }
 
     public String getId() {
@@ -69,6 +73,22 @@ public class Product implements Comparable<Product> {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public String getRecept() {
+        return recept;
+    }
+
+    public void setRecept(String recept) {
+        this.recept = recept;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 
     @Override

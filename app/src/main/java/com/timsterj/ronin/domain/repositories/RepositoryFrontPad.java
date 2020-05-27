@@ -77,7 +77,7 @@ public class RepositoryFrontPad implements IRepositoryFrontPad {
                         Observable.fromArray(productDTO.getName()),
                         Observable.fromArray(productDTO.getPrice()),
                         (Function3<String, String, String, Object>) (id, name, price) -> {
-                            Product product = new Product(id, BindHelper.bindProductBaseImageUrl(id),name, Integer.valueOf(price));
+                            Product product = new Product(id, BindHelper.bindProductBaseImageUrl(id),name, Integer.valueOf(price), BindHelper.bindProductRecept(id), BindHelper.bindProductWeight(id));
                             return product;
                         }
                 ).subscribe(v -> {

@@ -47,6 +47,7 @@ public class OrderViewHolder extends BaseViewHolder<OrderDone> {
 
         if (status == null) {
             status = "Заказ был удален (x_x)";
+            binding.txtOrderStatus.setTextColor(Color.BLACK);
         }
 
         if (status.equals("Новый")) {
@@ -56,7 +57,7 @@ public class OrderViewHolder extends BaseViewHolder<OrderDone> {
         } else if (status.equals("Произведен")){
             binding.txtOrderStatus.setTextColor(Color.GREEN);
         } else if (status.equals("В пути")){
-            binding.txtOrderStatus.setTextColor(Color.YELLOW);
+            binding.txtOrderStatus.setTextColor(Color.LTGRAY);
         } else if (status.equals("Выполнен")){
             binding.txtOrderStatus.setTextColor(Color.GRAY);
             binding.btnReorder.setVisibility(View.VISIBLE);
