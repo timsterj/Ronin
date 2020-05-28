@@ -20,6 +20,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested_sv"
         android:visibility="gone"
+        android:layout_marginEnd="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
