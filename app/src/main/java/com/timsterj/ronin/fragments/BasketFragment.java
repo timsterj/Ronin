@@ -158,17 +158,17 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
                     return false;
                 }
 
-            } else if (cCalendar.get(Calendar.DAY_OF_MONTH) == pCalendar.get(Calendar.DAY_OF_MONTH)){
+            } else if (cCalendar.get(Calendar.DAY_OF_MONTH) == pCalendar.get(Calendar.DAY_OF_MONTH)) {
                 Snackbar.make(binding.getRoot(), "В день по 10 заказов (0_0)", Snackbar.LENGTH_SHORT).show();
 
                 return false;
-            } else if (cCalendar.get(Calendar.DAY_OF_MONTH) > pCalendar.get(Calendar.DAY_OF_MONTH)){
+            } else if (cCalendar.get(Calendar.DAY_OF_MONTH) > pCalendar.get(Calendar.DAY_OF_MONTH)) {
                 sharedPreferences.edit().putLong(Contracts.PreferencesConstant.DAILY_ORDER_LIMIT, new Date().getTime()).apply();
                 sharedPreferences.edit().putInt(Contracts.PreferencesConstant.DAILY_ORDER_SIZE_LIMIT, 0).apply();
 
                 return true;
             }
-        } else if (pOrderSize == 9){
+        } else if (pOrderSize == 9) {
             sharedPreferences.edit().putLong(Contracts.PreferencesConstant.DAILY_ORDER_LIMIT, new Date().getTime()).apply();
 
             return true;
@@ -339,29 +339,20 @@ public class BasketFragment extends MvpAppCompatFragment implements BasketContra
 
         order.setScore(price);
 
-        if (price < 400) {
-            binding.btnOrderIt.setClickable(false);
-            binding.btnOrderIt.setOnClickListener(view -> {
-                Toast.makeText(getContext(), "Минимальная сумма заказа 400 руб.", Toast.LENGTH_LONG).show();
-            });
+        binding.btnOrderIt.setClickable(true);
+        binding.btnOrderIt.setOnClickListener(view -> {
+            if (checkOrderLimit()) {
+                List<ProductItem> additionalList = Session.getINSTANCE().getAdditionalProducts().getValue();
 
-        } else {
-            binding.btnOrderIt.setClickable(true);
-            binding.btnOrderIt.setOnClickListener(view -> {
-                if (checkOrderLimit()) {
-                    List<ProductItem> additionalList = Session.getINSTANCE().getAdditionalProducts().getValue();
-
-                    for (ProductItem product : additionalList) {
-                        product.getProduct().setCount(0);
-                    }
-
-                    Session.getINSTANCE().getAdditionalProducts().onNext(additionalList);
-
-                    getRouter().navigateTo(new Screens.OrderScreen(Contracts.NavigationConstant.ORDER));
+                for (ProductItem product : additionalList) {
+                    product.getProduct().setCount(0);
                 }
-            });
 
-        }
+                Session.getINSTANCE().getAdditionalProducts().onNext(additionalList);
+
+                getRouter().navigateTo(new Screens.OrderScreen(Contracts.NavigationConstant.ORDER));
+            }
+        });
 
         binding.toolbarBasket.setTitle(price + " руб");
     }

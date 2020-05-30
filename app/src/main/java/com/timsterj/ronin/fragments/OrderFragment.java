@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -138,9 +139,16 @@ public class OrderFragment extends MvpAppCompatFragment implements OrderContract
     }
 
     @Override
+    public void showLimitError() {
+        binding.progressOrder.setVisibility(View.GONE);
+        binding.btnOrderIt.setVisibility(View.VISIBLE);
+        Toast.makeText(getContext(), "Минимальная сумма заказа 400 руб.", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
     public void onSuccess(int index) {
         int pOrderSize = sharedPreferences.getInt(Contracts.PreferencesConstant.DAILY_ORDER_SIZE_LIMIT, 0);
-        sharedPreferences.edit().putInt(Contracts.PreferencesConstant.DAILY_ORDER_SIZE_LIMIT, pOrderSize+1).apply();
+        sharedPreferences.edit().putInt(Contracts.PreferencesConstant.DAILY_ORDER_SIZE_LIMIT, pOrderSize + 1).apply();
 
         startLastOrderStatusService();
         getRouter().navigateTo(new Screens.OrderInfoScreen(Contracts.NavigationConstant.ORDER_INFO, index, Contracts.NavigationConstant.TAB_BASKET));

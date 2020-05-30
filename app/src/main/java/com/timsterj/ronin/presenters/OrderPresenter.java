@@ -1,6 +1,7 @@
 package com.timsterj.ronin.presenters;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.timsterj.ronin.App;
 import com.timsterj.ronin.common.Session;
@@ -62,7 +63,7 @@ public class OrderPresenter extends MvpPresenter<OrderContract.View> implements 
                 .getOrderDoneDao();
     }
 
-    FrontPadApi getFrontPadApi() {
+    private FrontPadApi getFrontPadApi() {
         return retrofit.create(FrontPadApi.class);
     }
 
@@ -154,6 +155,11 @@ public class OrderPresenter extends MvpPresenter<OrderContract.View> implements 
     @Override
     public void doOrder(String descr) {
         getViewState().showLoading();
+        if (price < 400) {
+            getViewState().showLimitError();
+            return;
+        }
+
         List<Product> orderList = new ArrayList<>();
         int index = 0;
 

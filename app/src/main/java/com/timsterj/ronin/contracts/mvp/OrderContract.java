@@ -25,6 +25,7 @@ public interface OrderContract {
 
         void startLastOrderStatusService();
 
+        void showLimitError();
     }
 
     interface Presenter {
