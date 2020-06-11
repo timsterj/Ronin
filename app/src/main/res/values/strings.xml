@@ -62,6 +62,7 @@
     <string name="search_swipe_action_text">Смахните влево, чтобы выбрать действие:\n- Нажмите на красный квадрат, чтобы добавить в Любимое\n- Нажмите на зеленый для добавления в корзину</string>
     <string name="last_order_info_title">Последний заказ</string>
     <string name="order_was_removed_helper_text">Ваш заказ был списан, либо удалён! Возможно заказ содержал нестандартные параметры :(</string>
+    <string name="sign_in">Войти</string>
 
 
     <string-array name="about_us_urls">
